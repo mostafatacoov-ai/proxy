@@ -1,0 +1,92 @@
+{
+  "navigation": {
+    "home": "Home",
+    "work": "Work",
+    "services": "Services",
+    "about": "About",
+    "contact": "Contact",
+    "langToggle": "العربية"
+  },
+  "hero": {
+    "headline": "Your Vision.<br/>Our Precision.",
+    "subheadline": "Proxy is a premier post-production house dedicated to transforming raw capture into cinematic mastery. We provide elite finishing services for filmmakers, brands, and agencies who demand the highest industry standards.",
+    "explore": "Explore Our Work",
+    "partner": "Partner With Us"
+  },
+  "work": {
+    "title": "Our Work",
+    "subtitle": "A showcase of cinematic excellence."
+  },
+  "intro": {
+    "title": "The Final Polish for World-Class Storytelling",
+    "description": "The story doesn't end when the cameras stop rolling; it only just begins. At Proxy, we specialize in the art of the finish. From the pacing of the edit to the final audio mix, we handle every technical and creative detail to ensure your project commands attention and delivers an unforgettable audience experience.",
+    "editing": "Editing",
+    "editingDesc": "Shaping the narrative flow.",
+    "color": "Color Grading",
+    "colorDesc": "Defining the visual mood.",
+    "vfx": "VFX",
+    "vfxDesc": "Seamlessly expanding reality.",
+    "mix": "MIX",
+    "mixDesc": "Crafting immersive soundscapes.",
+    "viewAll": "View Full Services"
+  },
+  "about": {
+    "title": "About Proxy",
+    "description": "Proxy is an architecture of visual and auditory perfection. We are a specialized post-production facility built to serve the meticulous demands of high-end commercial, documentary, and narrative projects. We understand that premium projects require more than just technical execution; they require an intuitive understanding of the brand's prestige and the director's intent. We are the invisible hand that elevates good footage into an undeniable masterpiece.",
+    "missionTitle": "Our Mission",
+    "mission": "To deliver elite, end-to-end post-production services that empower creators and premium brands to captivate their audiences. We are committed to meticulous craftsmanship, ensuring every frame and frequency meets the uncompromising standards of top-tier visual media.",
+    "visionTitle": "Our Vision",
+    "vision": "To be the definitive post-production partner for world-class creators, consistently setting the benchmark for visual brilliance and audio fidelity in the industry."
+  },
+  "services": {
+    "title": "Post-Production Expertise",
+    "subtitle": "Our facility is equipped to handle the rigorous demands of modern media, delivering polished, broadcast-ready, and cinema-grade deliverables.",
+    "items": [
+      {
+        "num": "01",
+        "title": "Offline & Online Editing",
+        "subtitle": "Crafting the Core Narrative",
+        "desc": "Pacing, rhythm, and structure are the lifeblood of any film. Our editorial team meticulously carves out the story, focusing on the emotional resonance and strategic impact of every cut. We handle both offline storytelling and the high-resolution online conform process, ensuring a flawless transition to the final master."
+      },
+      {
+        "num": "02",
+        "title": "Color Grading",
+        "subtitle": "Sculpting with Light and Tone",
+        "desc": "Color dictates emotion. We provide high-end color grading that establishes the aesthetic identity of your project. Whether achieving a gritty documentary realism or a hyper-stylized commercial look, we ensure absolute color fidelity and visual consistency across every shot, elevating the production value to a premium standard."
+      },
+      {
+        "num": "03",
+        "title": "Visual Effects (VFX)",
+        "subtitle": "Seamless Illusions & Enhancements",
+        "desc": "From subtle cleanups to complex compositing, our VFX pipeline integrates digital elements flawlessly into live-action plates. We specialize in invisible effects that support the narrative without distracting the eye, maintaining the authentic, high-quality feel of your original cinematography."
+      },
+      {
+        "num": "04",
+        "title": "Audio MIX",
+        "subtitle": "Immersive Sound Design & Mixing",
+        "desc": "A premium visual experience requires equally compelling audio. Our mixing services ensure dialogue clarity, dynamic sound design, and balanced scores. We deliver crisp, spatial audio mixes tailored for any destination—from theatrical surround sound to optimized stereo for digital broadcast—ensuring your project is heard exactly as intended."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Let's Finalize Your Masterpiece",
+    "subtitle": "Ready to elevate your next production? Connect with our team to discuss your project requirements, timelines, and post-production workflow.",
+    "emailLabel": "Email:",
+    "phoneLabel": "Phone:",
+    "locationLabel": "Studio Location:",
+    "locationText": "123 Cinematic Way, Suite 100, Post City, PC 90210",
+    "form": {
+      "name": "Name",
+      "company": "Company/Agency",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "scope": "Project Scope",
+      "scopeOptions": ["Select a scope...", "Editing", "Color", "VFX", "MIX", "Full Post"],
+      "details": "Project Details",
+      "submit": "Request Consultation"
+    }
+  },
+  "footer": {
+    "copy": "Proxy Media Production. All rights reserved."
+  }
+}
