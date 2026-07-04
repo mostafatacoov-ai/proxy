@@ -5,7 +5,11 @@
     "services": "Services",
     "about": "About",
     "contact": "Contact",
-    "langToggle": "العربية"
+    "langToggle": "العربية",
+    "production": "Proxy Production",
+    "advertising": "Proxy Advertising",
+    "exclusive": "Proxy Exclusive",
+    "studio": "Proxy Studio"
   },
   "hero": {
     "headline": "Your Vision.<br/>Our Precision.",

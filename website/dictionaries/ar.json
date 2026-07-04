@@ -3,9 +3,13 @@
     "home": "الرئيسية",
     "work": "أعمالنا",
     "services": "خدماتنا",
-    "about": "من نحن",
-    "contact": "اتصل بنا",
-    "langToggle": "English"
+    "about": "عن بروكسي",
+    "contact": "تواصل معنا",
+    "langToggle": "English",
+    "production": "بروكسي للإنتاج",
+    "advertising": "بروكسي للإعلان",
+    "exclusive": "بروكسي الحصرية",
+    "studio": "استوديو بروكسي"
   },
   "hero": {
     "headline": "رؤيتك.<br/>دِقتنا.",

@@ -38,7 +38,17 @@ export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: an
       <div className="nav-links">
         <Link href={`/${lang}`} className="nav-link">{dict.navigation.home}</Link>
         <Link href={`/${lang}/work`} className="nav-link">{dict.navigation.work}</Link>
-        <Link href={`/${lang}/services`} className="nav-link">{dict.navigation.services}</Link>
+        <div className="dropdown">
+          <Link href={`/${lang}/services`} className="nav-link">
+            {dict.navigation.services}
+          </Link>
+          <div className="dropdown-content">
+            <Link href={`/${lang}/services/production`}>{dict.navigation.production}</Link>
+            <Link href={`/${lang}/services/advertising`}>{dict.navigation.advertising}</Link>
+            <Link href={`/${lang}/services/exclusive`}>{dict.navigation.exclusive}</Link>
+            <Link href={`/${lang}/services/studio`}>{dict.navigation.studio}</Link>
+          </div>
+        </div>
         <Link href={`/${lang}/about`} className="nav-link">{dict.navigation.about}</Link>
         <Link href={`/${lang}/contact`} className="nav-link">{dict.navigation.contact}</Link>
         
