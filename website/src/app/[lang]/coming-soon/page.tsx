@@ -50,7 +50,7 @@ export default async function ComingSoon({
         transform: 'translateY(20px)'
       }}>
         <h1 className="hero-headline" style={{ fontSize: '4rem', marginBottom: '1rem' }}>
-          PROXY MEDIA
+          PROXY GROUP
         </h1>
         <h2 className="hero-subheadline" style={{ fontSize: '1.5rem', fontWeight: 300, letterSpacing: '0.2em' }}>
           COMING SOON

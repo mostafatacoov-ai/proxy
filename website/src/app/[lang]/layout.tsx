@@ -4,7 +4,7 @@ import { getDictionary } from "@/getDictionary";
 import Navigation from "@/components/Navigation";
 
 export const metadata: Metadata = {
-  title: "Proxy Media Production",
+  title: "Proxy Group",
   description: "Premium post-production for extraordinary stories.",
 };
 

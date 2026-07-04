@@ -27,7 +27,7 @@ export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: an
         <Link href={`/${lang}`}>
           <Image
             src="/images/logo-horizontal.jpeg"
-            alt="Proxy Media Production"
+            alt="Proxy Group"
             width={180}
             height={50}
             className="logo"
