@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import LoadingScreen from "./LoadingScreen";
 import Link from "next/link";
 
-export default function HeroClient({ dict, lang }: { dict: any, lang: string }) {
+export default function HeroClient({ dict, lang }: { dict: Record<string, any>, lang: string }) {
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);

@@ -6,6 +6,14 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
   const [isFading, setIsFading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const finishLoading = () => {
+    if (isFading) return;
+    setIsFading(true);
+    setTimeout(() => {
+      onComplete();
+    }, 800); // 800ms for fade out transition
+  };
+
   useEffect(() => {
     // Attempt to play with sound
     if (videoRef.current) {
@@ -29,15 +37,8 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
     }, 6000); // Intro video is usually 4-5 seconds
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const finishLoading = () => {
-    if (isFading) return;
-    setIsFading(true);
-    setTimeout(() => {
-      onComplete();
-    }, 800); // 800ms for fade out transition
-  };
 
   return (
     <div className={`loading-screen ${isFading ? 'fade-out' : ''}`}>

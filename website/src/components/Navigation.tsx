@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
-export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: any }) {
+export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: Record<string, any> }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
