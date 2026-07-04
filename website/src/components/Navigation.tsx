@@ -43,6 +43,7 @@ export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: an
             {dict.navigation.services}
           </Link>
           <div className="dropdown-content">
+            <Link href={`/${lang}/services/post-production`}>{dict.navigation.postProduction}</Link>
             <Link href={`/${lang}/services/production`}>{dict.navigation.production}</Link>
             <Link href={`/${lang}/services/advertising`}>{dict.navigation.advertising}</Link>
             <Link href={`/${lang}/services/exclusive`}>{dict.navigation.exclusive}</Link>

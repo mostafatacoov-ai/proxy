@@ -31,6 +31,10 @@ body {
 }
 
 /* Themes */
+body.theme-post-production {
+  --background: linear-gradient(135deg, #000000 0%, #3a3a3a 100%);
+}
+
 body.theme-production {
   --background: #000000;
 }
