@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import LoadingScreen from "./LoadingScreen";
 import Link from "next/link";
 
 export default function HeroClient({ dict, lang }: { dict: any, lang: string }) {
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
 
   return (
     <>
@@ -16,6 +23,7 @@ export default function HeroClient({ dict, lang }: { dict: any, lang: string }) 
         <section className="hero-section">
           <div className="video-wrapper">
             <video
+              ref={videoRef}
               className="background-video"
               autoPlay
               loop

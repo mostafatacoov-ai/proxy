@@ -7,6 +7,22 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    // Attempt to play with sound
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      const playPromise = videoRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.warn("Browser blocked autoplay with sound. Falling back to muted autoplay.", error);
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            videoRef.current.play().catch(e => console.error("Autoplay completely failed.", e));
+          }
+        });
+      }
+    }
+
     // Fallback timer just in case video doesn't play or end event fails
     const timer = setTimeout(() => {
       finishLoading();
@@ -28,8 +44,6 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
       <video 
         ref={videoRef}
         src="/videos/intro.mp4" 
-        autoPlay 
-        muted 
         playsInline 
         onEnded={finishLoading}
         className="intro-video"
