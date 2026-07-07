@@ -7,8 +7,13 @@ const uploadDirPath = path.join(process.cwd(), 'public', 'uploads', 'videos');
 
 export async function GET() {
   try {
-    const fileContent = await fs.readFile(dataFilePath, 'utf-8');
-    const videos = JSON.parse(fileContent);
+    let videos = [];
+    try {
+      const fileContent = await fs.readFile(dataFilePath, 'utf-8');
+      videos = JSON.parse(fileContent);
+    } catch (e) {
+      // file might not exist, return empty array
+    }
     return NextResponse.json(videos);
   } catch (error) {
     console.error('Failed to read videos data', error);
