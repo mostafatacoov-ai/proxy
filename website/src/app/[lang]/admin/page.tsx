@@ -15,9 +15,8 @@ type Video = {
   title: string;
   description: string;
   category: string;
-  fileName: string;
-  filePath: string;
-  createdAt: string;
+  video_url: string;
+  created_at: string;
 };
 
 export default function AdminPage() {
@@ -221,7 +220,7 @@ export default function AdminPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
           {videos.map(video => (
             <div key={video.id} style={{ background: '#111', border: '1px solid #333', borderRadius: '8px', overflow: 'hidden' }}>
-              <video src={video.filePath} controls style={{ width: '100%', height: '200px', objectFit: 'cover', background: '#000' }} />
+              <video src={video.video_url} controls style={{ width: '100%', height: '200px', objectFit: 'cover', background: '#000' }} />
               <div style={{ padding: '1rem' }}>
                 <div style={{ fontSize: '0.8rem', color: '#aaa', marginBottom: '0.5rem', textTransform: 'uppercase' }}>{video.category}</div>
                 <h3 style={{ marginBottom: '0.5rem', fontSize: '1.2rem' }}>{video.title}</h3>

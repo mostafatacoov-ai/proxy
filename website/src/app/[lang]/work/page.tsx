@@ -1,23 +1,25 @@
 import { getDictionary } from "@/getDictionary";
-import fs from 'fs/promises';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
+
+export const revalidate = 0; // Ensure fresh data on every request
 
 export default async function Work({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang as 'en' | 'ar');
 
-  // Fetch videos from JSON file
+  // Fetch videos from Supabase
   let videos: any[] = [];
   try {
-    const dataFilePath = path.join(process.cwd(), 'data', 'videos.json');
-    const fileContent = await fs.readFile(dataFilePath, 'utf-8');
-    videos = JSON.parse(fileContent);
+    const { data, error } = await supabase
+      .from('videos')
+      .select('*')
+      .order('created_at', { ascending: false });
+      
+    if (error) throw error;
+    if (data) videos = data;
   } catch (e) {
-    console.error('Failed to load videos:', e);
+    console.error('Failed to load videos from Supabase:', e);
   }
-
-  // Sort by newest first
-  videos.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   // Group videos by category or just list them all. The request says "dropdown to check where this video will apper like under proxy production or proxcy advertisng, ...ext".
   // This implies we might want to group them or show the category. Let's list them all but display the category badge.
@@ -38,7 +40,7 @@ export default async function Work({ params }: { params: Promise<{ lang: string 
             <div key={video.id} className="video-card" style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#000', borderRadius: '8px', overflow: 'hidden' }}>
                 <video 
-                  src={video.filePath} 
+                  src={video.video_url} 
                   controls 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                 />
