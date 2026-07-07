@@ -54,41 +54,58 @@ export default function AdminPage() {
     }
   };
 
-  const handleUpload = async (e: React.FormEvent) => {
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const handleUpload = (e: React.FormEvent) => {
     e.preventDefault();
     if (!file || !title || !category) return;
     
     setUploading(true);
+    setUploadProgress(0);
     const formData = new FormData();
     formData.append('file', file);
     formData.append('title', title);
     formData.append('description', description);
     formData.append('category', category);
 
-    try {
-      const res = await fetch('/api/videos', {
-        method: 'POST',
-        body: formData,
-      });
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/videos', true);
 
-      if (res.ok) {
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = Math.round((event.loaded / event.total) * 100);
+        setUploadProgress(percentComplete);
+      }
+    };
+
+    xhr.onload = () => {
+      setUploading(false);
+      setUploadProgress(0);
+      
+      if (xhr.status >= 200 && xhr.status < 300) {
         setTitle('');
         setDescription('');
         setFile(null);
-        // Reset file input via ref or by uncontrolled form clear
         (document.getElementById('videoFile') as HTMLInputElement).value = '';
         fetchVideos();
       } else {
-        const errData = await res.json().catch(() => ({}));
-        console.error('Upload failed details:', errData);
-        alert(`Upload failed: ${errData.error || 'Unknown error'}`);
+        try {
+          const errData = JSON.parse(xhr.responseText);
+          console.error('Upload failed details:', errData);
+          alert(`Upload failed: ${errData.error || 'Unknown error'}`);
+        } catch {
+          alert('Upload failed');
+        }
       }
-    } catch (e: any) {
-      console.error('Upload exception:', e);
-      alert(`Upload failed: ${e.message}`);
-    } finally {
+    };
+
+    xhr.onerror = () => {
       setUploading(false);
-    }
+      setUploadProgress(0);
+      alert('Upload failed due to a network error');
+    };
+
+    xhr.send(formData);
   };
 
   const handleDelete = async (id: string) => {
@@ -191,6 +208,25 @@ export default function AdminPage() {
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
+
+          {uploading && uploadProgress > 0 && (
+            <div style={{ marginTop: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#ccc', fontSize: '0.9rem' }}>
+                <span>Uploading...</span>
+                <span>{uploadProgress}%</span>
+              </div>
+              <div style={{ width: '100%', height: '8px', background: '#333', borderRadius: '4px', overflow: 'hidden' }}>
+                <div 
+                  style={{ 
+                    width: `${uploadProgress}%`, 
+                    height: '100%', 
+                    background: '#fff', 
+                    transition: 'width 0.2s ease' 
+                  }} 
+                />
+              </div>
+            </div>
+          )}
 
           <button 
             type="submit" 

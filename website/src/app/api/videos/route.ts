@@ -32,33 +32,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 1. Upload to Supabase Storage
+    // 1. Upload to local file system (Hostinger)
     const ext = path.extname(file.name) || '.mp4';
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     
-    // We must pass the raw file buffer to Supabase Storage
+    // Convert to buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const { data: storageData, error: storageError } = await supabase.storage
-      .from('videos')
-      .upload(fileName, buffer, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: file.type || 'video/mp4'
-      });
+    // Ensure directory exists
+    const fs = require('fs/promises');
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'videos');
+    await fs.mkdir(uploadDir, { recursive: true });
+    
+    // Save file
+    const filePath = path.join(uploadDir, fileName);
+    await fs.writeFile(filePath, buffer);
 
-    if (storageError) {
-      console.error('Storage error:', storageError);
-      return NextResponse.json({ error: 'Failed to upload video to storage' }, { status: 500 });
-    }
-
-    // Get the public URL for the uploaded video
-    const { data: publicUrlData } = supabase.storage
-      .from('videos')
-      .getPublicUrl(fileName);
-
-    const videoUrl = publicUrlData.publicUrl;
+    const videoUrl = `/uploads/videos/${fileName}`;
 
     // 2. Insert metadata into Supabase Database
     const { data: dbData, error: dbError } = await supabase
@@ -77,8 +68,8 @@ export async function POST(request: Request) {
 
     if (dbError) {
       console.error('Database error:', dbError);
-      // Attempt to clean up storage if DB insert fails
-      await supabase.storage.from('videos').remove([fileName]);
+      // Attempt to clean up local file if DB insert fails
+      await fs.unlink(filePath).catch(() => {});
       return NextResponse.json({ error: 'Failed to save video metadata' }, { status: 500 });
     }
 

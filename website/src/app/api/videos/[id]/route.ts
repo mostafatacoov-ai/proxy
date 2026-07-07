@@ -48,9 +48,12 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
     const urlParts = video.video_url.split('/');
     const fileName = urlParts[urlParts.length - 1];
 
-    // Delete from Supabase Storage
+    // Delete from local file system
     if (fileName) {
-      await supabase.storage.from('videos').remove([fileName]);
+      const fs = require('fs/promises');
+      const path = require('path');
+      const filePath = path.join(process.cwd(), 'public', 'uploads', 'videos', fileName);
+      await fs.unlink(filePath).catch((err: any) => console.error('Failed to delete file:', err));
     }
 
     // Delete from Supabase Database
