@@ -37,11 +37,15 @@ export async function POST(request: Request) {
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     
     // We must pass the raw file buffer to Supabase Storage
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
     const { data: storageData, error: storageError } = await supabase.storage
       .from('videos')
-      .upload(fileName, file, {
+      .upload(fileName, buffer, {
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
+        contentType: file.type || 'video/mp4'
       });
 
     if (storageError) {
@@ -79,8 +83,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ message: 'Video uploaded successfully', video: dbData }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Upload error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Internal Server Error', stack: error.stack }, { status: 500 });
   }
 }

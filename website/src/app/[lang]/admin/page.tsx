@@ -79,11 +79,13 @@ export default function AdminPage() {
         (document.getElementById('videoFile') as HTMLInputElement).value = '';
         fetchVideos();
       } else {
-        alert('Upload failed');
+        const errData = await res.json().catch(() => ({}));
+        console.error('Upload failed details:', errData);
+        alert(`Upload failed: ${errData.error || 'Unknown error'}`);
       }
-    } catch (e) {
-      console.error(e);
-      alert('Upload failed');
+    } catch (e: any) {
+      console.error('Upload exception:', e);
+      alert(`Upload failed: ${e.message}`);
     } finally {
       setUploading(false);
     }
