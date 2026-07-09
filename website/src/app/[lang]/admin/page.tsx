@@ -90,6 +90,7 @@ export default function AdminPage() {
         (document.getElementById('videoFile') as HTMLInputElement).value = '';
         fetchVideos();
         setSuccessMessage('Upload completed successfully!');
+        alert('Upload completed successfully!');
         setTimeout(() => setSuccessMessage(''), 5000);
       } else {
         try {
@@ -212,7 +213,7 @@ export default function AdminPage() {
             </select>
           </div>
 
-          {uploading && uploadProgress > 0 && (
+          {uploading && (
             <div style={{ marginTop: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#ccc', fontSize: '0.9rem' }}>
                 <span>Uploading...</span>
