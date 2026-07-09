@@ -29,6 +29,7 @@ export default function AdminPage() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [uploading, setUploading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   
   // Edit State
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
@@ -88,6 +89,8 @@ export default function AdminPage() {
         setFile(null);
         (document.getElementById('videoFile') as HTMLInputElement).value = '';
         fetchVideos();
+        setSuccessMessage('Upload completed successfully!');
+        setTimeout(() => setSuccessMessage(''), 5000);
       } else {
         try {
           const errData = JSON.parse(xhr.responseText);
@@ -225,6 +228,12 @@ export default function AdminPage() {
                   }} 
                 />
               </div>
+            </div>
+          )}
+
+          {successMessage && (
+            <div style={{ padding: '1rem', background: 'rgba(40, 167, 69, 0.2)', color: '#4ade80', border: '1px solid #28a745', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold' }}>
+              {successMessage}
             </div>
           )}
 

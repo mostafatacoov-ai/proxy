@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import path from 'path';
+import { pipeline } from 'stream/promises';
+import { createWriteStream } from 'fs';
+import { Readable } from 'stream';
 
 export async function GET() {
   try {
@@ -36,10 +39,6 @@ export async function POST(request: Request) {
     const ext = path.extname(file.name) || '.mp4';
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     
-    // Convert to buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
     // Ensure directory exists
     const fs = require('fs/promises');
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'videos');
@@ -47,7 +46,10 @@ export async function POST(request: Request) {
     
     // Save file
     const filePath = path.join(uploadDir, fileName);
-    await fs.writeFile(filePath, buffer);
+    
+    // Stream file to disk to avoid out-of-memory errors for large files
+    const fileStream = file.stream();
+    await pipeline(Readable.fromWeb(fileStream as any), createWriteStream(filePath));
 
     const videoUrl = `/uploads/videos/${fileName}`;
 
@@ -70,7 +72,7 @@ export async function POST(request: Request) {
       console.error('Database error:', dbError);
       // Attempt to clean up local file if DB insert fails
       await fs.unlink(filePath).catch(() => {});
-      return NextResponse.json({ error: 'Failed to save video metadata' }, { status: 500 });
+      return NextResponse.json({ error: `Database error: ${dbError.message || dbError.details || 'Failed to save metadata'}` }, { status: 500 });
     }
 
     return NextResponse.json({ message: 'Video uploaded successfully', video: dbData }, { status: 201 });
