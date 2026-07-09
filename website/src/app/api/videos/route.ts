@@ -82,7 +82,7 @@ export async function POST(request: Request) {
     if (dbError) {
       console.error('Database error:', dbError);
       // Attempt to clean up local file if DB insert fails
-      await fs.unlink(filePath).catch(() => {});
+      await fsPromises.unlink(filePath).catch(() => {});
       return NextResponse.json({ error: `Database error: ${dbError.message || dbError.details || 'Failed to save metadata'}` }, { status: 500 });
     }
 
