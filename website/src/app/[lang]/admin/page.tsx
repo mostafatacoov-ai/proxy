@@ -57,59 +57,66 @@ export default function AdminPage() {
 
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const handleUpload = (e: React.FormEvent) => {
+  const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file || !title || !category) return;
     
     setUploading(true);
     setUploadProgress(0);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('category', category);
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/videos', true);
+    const CHUNK_SIZE = 10 * 1024 * 1024; // 10MB chunks
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    const uniqueFileId = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    
+    try {
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        const start = chunkIndex * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, file.size);
+        const chunk = file.slice(start, end);
 
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percentComplete = Math.round((event.loaded / event.total) * 100);
+        const formData = new FormData();
+        formData.append('file', chunk, file.name);
+        formData.append('chunkIndex', chunkIndex.toString());
+        formData.append('totalChunks', totalChunks.toString());
+        formData.append('uniqueFileId', uniqueFileId);
+        
+        // Always pass metadata so it's available on the final chunk
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('category', category);
+
+        const response = await fetch('/api/videos', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `Failed to upload chunk ${chunkIndex}`);
+        }
+
+        // Update progress
+        const percentComplete = Math.round(((chunkIndex + 1) / totalChunks) * 100);
         setUploadProgress(percentComplete);
       }
-    };
 
-    xhr.onload = () => {
-      setUploading(false);
-      setUploadProgress(0);
+      // Success
+      setTitle('');
+      setDescription('');
+      setFile(null);
+      const fileInput = document.getElementById('videoFile') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
       
-      if (xhr.status >= 200 && xhr.status < 300) {
-        setTitle('');
-        setDescription('');
-        setFile(null);
-        (document.getElementById('videoFile') as HTMLInputElement).value = '';
-        fetchVideos();
-        setSuccessMessage('Upload completed successfully!');
-        alert('Upload completed successfully!');
-        setTimeout(() => setSuccessMessage(''), 5000);
-      } else {
-        try {
-          const errData = JSON.parse(xhr.responseText);
-          console.error('Upload failed details:', errData);
-          alert(`Upload failed: ${errData.error || 'Unknown error'}`);
-        } catch {
-          alert('Upload failed');
-        }
-      }
-    };
-
-    xhr.onerror = () => {
+      fetchVideos();
+      setSuccessMessage('Upload completed successfully!');
+      alert('Upload completed successfully!');
+      setTimeout(() => setSuccessMessage(''), 5000);
+    } catch (error: any) {
+      console.error('Upload failed details:', error);
+      alert(`Upload failed: ${error.message || 'Unknown error'}`);
+    } finally {
       setUploading(false);
-      setUploadProgress(0);
-      alert('Upload failed due to a network error');
-    };
-
-    xhr.send(formData);
+    }
   };
 
   const handleDelete = async (id: string) => {
