@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import path from 'path';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
+import os from 'os';
 
 export async function GET() {
   try {
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     
     // Ensure directory exists
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'videos');
+    const uploadDir = path.join(os.homedir(), '.proxy_videos');
     await fsPromises.mkdir(uploadDir, { recursive: true });
     
     // Save file
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
       throw err;
     }
 
-    const videoUrl = `/uploads/videos/${fileName}`;
+    const videoUrl = `/api/videos/stream/${fileName}`;
 
     // 2. Insert metadata into Supabase Database
     const { data: dbData, error: dbError } = await supabase
