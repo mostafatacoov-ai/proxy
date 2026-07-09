@@ -44,7 +44,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
     <div className={`loading-screen ${isFading ? 'fade-out' : ''}`}>
       <video 
         ref={videoRef}
-        src="/videos/intro.mp4" 
+        src="/api/videos/stream/intro.mp4" 
         playsInline 
         onEnded={finishLoading}
         className="intro-video"

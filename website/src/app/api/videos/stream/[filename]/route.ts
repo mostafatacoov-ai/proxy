@@ -9,11 +9,17 @@ export async function GET(
 ) {
   try {
     const { filename } = await params;
-    const filePath = path.join(os.homedir(), '.proxy_videos', filename);
+    let filePath = path.join(os.homedir(), '.proxy_videos', filename);
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
-      return new NextResponse('File not found', { status: 404 });
+      // Fallback to local public/videos folder
+      const fallbackPath = path.join(process.cwd(), 'public', 'videos', filename);
+      if (fs.existsSync(fallbackPath)) {
+        filePath = fallbackPath;
+      } else {
+        return new NextResponse('File not found', { status: 404 });
+      }
     }
 
     const stat = fs.statSync(filePath);

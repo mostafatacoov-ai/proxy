@@ -29,7 +29,7 @@ export default function HeroClient({ dict, lang }: { dict: Record<string, any>, 
               loop
               muted={isMuted}
               playsInline
-              src="/videos/final_V5_G.mp4"
+              src="/api/videos/stream/final_V5_G.mp4"
             />
             <div className="video-overlay"></div>
           </div>
