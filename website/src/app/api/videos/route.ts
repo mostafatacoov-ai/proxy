@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import path from 'path';
-import { pipeline } from 'stream/promises';
-import { createWriteStream } from 'fs';
-import { Readable } from 'stream';
+import fs from 'fs';
+import fsPromises from 'fs/promises';
 
 export async function GET() {
   try {
@@ -40,16 +39,28 @@ export async function POST(request: Request) {
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     
     // Ensure directory exists
-    const fs = require('fs/promises');
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'videos');
-    await fs.mkdir(uploadDir, { recursive: true });
+    await fsPromises.mkdir(uploadDir, { recursive: true });
     
     // Save file
     const filePath = path.join(uploadDir, fileName);
     
     // Stream file to disk to avoid out-of-memory errors for large files
+    const writeStream = fs.createWriteStream(filePath);
     const fileStream = file.stream();
-    await pipeline(Readable.fromWeb(fileStream as any), createWriteStream(filePath));
+    const reader = fileStream.getReader();
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        writeStream.write(Buffer.from(value));
+      }
+      writeStream.end();
+    } catch (err) {
+      writeStream.end();
+      throw err;
+    }
 
     const videoUrl = `/uploads/videos/${fileName}`;
 
