@@ -41,10 +41,6 @@ export default function AdminPage() {
   const [hasUnsavedOrder, setHasUnsavedOrder] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
 
-  useEffect(() => {
-    fetchVideos();
-  }, []);
-
   const fetchVideos = async () => {
     try {
       const res = await fetch('/api/videos');
@@ -59,6 +55,10 @@ export default function AdminPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
 
   const [uploadProgress, setUploadProgress] = useState(0);
 
