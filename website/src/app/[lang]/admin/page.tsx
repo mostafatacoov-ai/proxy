@@ -37,6 +37,10 @@ export default function AdminPage() {
   const [editDescription, setEditDescription] = useState('');
   const [editCategory, setEditCategory] = useState('');
 
+  // Reorder State
+  const [hasUnsavedOrder, setHasUnsavedOrder] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
+
   useEffect(() => {
     fetchVideos();
   }, []);
@@ -47,6 +51,7 @@ export default function AdminPage() {
       if (res.ok) {
         const data = await res.json();
         setVideos(data);
+        setHasUnsavedOrder(false);
       }
     } catch (e) {
       console.error('Failed to fetch videos', e);
@@ -167,6 +172,50 @@ export default function AdminPage() {
     }
   };
 
+  const moveVideoUp = (index: number) => {
+    if (index === 0) return;
+    const newVideos = [...videos];
+    const temp = newVideos[index];
+    newVideos[index] = newVideos[index - 1];
+    newVideos[index - 1] = temp;
+    setVideos(newVideos);
+    setHasUnsavedOrder(true);
+  };
+
+  const moveVideoDown = (index: number) => {
+    if (index === videos.length - 1) return;
+    const newVideos = [...videos];
+    const temp = newVideos[index];
+    newVideos[index] = newVideos[index + 1];
+    newVideos[index + 1] = temp;
+    setVideos(newVideos);
+    setHasUnsavedOrder(true);
+  };
+
+  const handleSaveOrder = async () => {
+    setSavingOrder(true);
+    try {
+      const videoIds = videos.map(v => v.id);
+      const res = await fetch('/api/videos/reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoIds })
+      });
+
+      if (res.ok) {
+        alert('Order saved successfully!');
+        setHasUnsavedOrder(false);
+      } else {
+        alert('Failed to save order');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Failed to save order');
+    } finally {
+      setSavingOrder(false);
+    }
+  };
+
   return (
     <div className="container" style={{ marginTop: '120px', paddingBottom: '100px' }}>
       <h1 className="section-title" style={{ fontSize: '2rem', marginBottom: '2rem' }}>Admin Dashboard</h1>
@@ -266,16 +315,56 @@ export default function AdminPage() {
       </div>
 
       {/* Videos List Section */}
-      <h2 style={{ marginBottom: '1.5rem', color: '#fff' }}>Manage Videos</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <h2 style={{ margin: 0, color: '#fff' }}>Manage Videos</h2>
+        {hasUnsavedOrder && (
+          <button 
+            onClick={handleSaveOrder} 
+            disabled={savingOrder}
+            style={{ 
+              padding: '0.8rem 1.5rem', 
+              background: '#28a745', 
+              color: '#fff', 
+              border: 'none', 
+              borderRadius: '4px', 
+              cursor: savingOrder ? 'not-allowed' : 'pointer', 
+              fontWeight: 'bold',
+              opacity: savingOrder ? 0.7 : 1
+            }}
+          >
+            {savingOrder ? 'Saving...' : 'Save New Order'}
+          </button>
+        )}
+      </div>
       {loading ? (
         <p>Loading...</p>
       ) : videos.length === 0 ? (
         <p style={{ color: '#666' }}>No videos uploaded yet.</p>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
-          {videos.map(video => (
-            <div key={video.id} style={{ background: '#111', border: '1px solid #333', borderRadius: '8px', overflow: 'hidden' }}>
+          {videos.map((video, index) => (
+            <div key={video.id} style={{ background: '#111', border: '1px solid #333', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
               <video src={video.video_url} controls style={{ width: '100%', height: '200px', objectFit: 'cover', background: '#000' }} />
+              
+              {/* Order Controls */}
+              <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '0.5rem', zIndex: 10 }}>
+                <button 
+                  onClick={() => moveVideoUp(index)} 
+                  disabled={index === 0}
+                  style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', border: '1px solid #555', cursor: index === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: index === 0 ? 0.3 : 1 }}
+                  title="Move Up"
+                >
+                  ↑
+                </button>
+                <button 
+                  onClick={() => moveVideoDown(index)} 
+                  disabled={index === videos.length - 1}
+                  style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', border: '1px solid #555', cursor: index === videos.length - 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: index === videos.length - 1 ? 0.3 : 1 }}
+                  title="Move Down"
+                >
+                  ↓
+                </button>
+              </div>
               <div style={{ padding: '1rem' }}>
                 <div style={{ fontSize: '0.8rem', color: '#aaa', marginBottom: '0.5rem', textTransform: 'uppercase' }}>{video.category}</div>
                 <h3 style={{ marginBottom: '0.5rem', fontSize: '1.2rem' }}>{video.title}</h3>
