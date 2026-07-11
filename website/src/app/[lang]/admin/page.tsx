@@ -41,6 +41,10 @@ export default function AdminPage() {
   const [hasUnsavedOrder, setHasUnsavedOrder] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
 
+  // Drag and Drop State
+  const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
+  const [dragOverItemIndex, setDragOverItemIndex] = useState<number | null>(null);
+
   const fetchVideos = async () => {
     try {
       const res = await fetch('/api/videos');
@@ -172,24 +176,31 @@ export default function AdminPage() {
     }
   };
 
-  const moveVideoUp = (index: number) => {
-    if (index === 0) return;
-    const newVideos = [...videos];
-    const temp = newVideos[index];
-    newVideos[index] = newVideos[index - 1];
-    newVideos[index - 1] = temp;
-    setVideos(newVideos);
-    setHasUnsavedOrder(true);
+  const handleDragStart = (index: number) => {
+    setDraggedItemIndex(index);
   };
 
-  const moveVideoDown = (index: number) => {
-    if (index === videos.length - 1) return;
-    const newVideos = [...videos];
-    const temp = newVideos[index];
-    newVideos[index] = newVideos[index + 1];
-    newVideos[index + 1] = temp;
-    setVideos(newVideos);
-    setHasUnsavedOrder(true);
+  const handleDragEnter = (index: number) => {
+    setDragOverItemIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItemIndex(null);
+    setDragOverItemIndex(null);
+  };
+
+  const handleDrop = (index: number) => {
+    if (draggedItemIndex === null) return;
+    if (draggedItemIndex !== index) {
+      const newVideos = [...videos];
+      const draggedItem = newVideos[draggedItemIndex];
+      newVideos.splice(draggedItemIndex, 1);
+      newVideos.splice(index, 0, draggedItem);
+      setVideos(newVideos);
+      setHasUnsavedOrder(true);
+    }
+    setDraggedItemIndex(null);
+    setDragOverItemIndex(null);
   };
 
   const handleSaveOrder = async () => {
@@ -343,27 +354,38 @@ export default function AdminPage() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
           {videos.map((video, index) => (
-            <div key={video.id} style={{ background: '#111', border: '1px solid #333', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+            <div 
+              key={video.id} 
+              draggable
+              onDragStart={() => handleDragStart(index)}
+              onDragEnter={() => handleDragEnter(index)}
+              onDragEnd={handleDragEnd}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => handleDrop(index)}
+              style={{ 
+                background: '#111', 
+                border: dragOverItemIndex === index ? '2px dashed #28a745' : '1px solid #333', 
+                borderRadius: '8px', 
+                overflow: 'hidden', 
+                position: 'relative',
+                opacity: draggedItemIndex === index ? 0.5 : 1,
+                cursor: 'grab',
+                transform: dragOverItemIndex === index ? 'scale(1.02)' : 'scale(1)',
+                transition: 'all 0.2s ease'
+              }}
+            >
               <video src={video.video_url} controls style={{ width: '100%', height: '200px', objectFit: 'cover', background: '#000' }} />
               
-              {/* Order Controls */}
-              <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', flexDirection: 'column', gap: '0.5rem', zIndex: 10 }}>
-                <button 
-                  onClick={() => moveVideoUp(index)} 
-                  disabled={index === 0}
-                  style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', border: '1px solid #555', cursor: index === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: index === 0 ? 0.3 : 1 }}
-                  title="Move Up"
-                >
-                  ↑
-                </button>
-                <button 
-                  onClick={() => moveVideoDown(index)} 
-                  disabled={index === videos.length - 1}
-                  style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', border: '1px solid #555', cursor: index === videos.length - 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: index === videos.length - 1 ? 0.3 : 1 }}
-                  title="Move Down"
-                >
-                  ↓
-                </button>
+              {/* Drag Handle Icon */}
+              <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10, background: 'rgba(0,0,0,0.6)', padding: '0.4rem', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
               </div>
               <div style={{ padding: '1rem' }}>
                 <div style={{ fontSize: '0.8rem', color: '#aaa', marginBottom: '0.5rem', textTransform: 'uppercase' }}>{video.category}</div>
