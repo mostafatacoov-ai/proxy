@@ -38,7 +38,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
 
     if (error) {
       console.error('Database update error:', error);
-      return NextResponse.json({ error: 'Video not found or failed to update' }, { status: 404 });
+      return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
     }
 
     return NextResponse.json({ message: 'Video updated successfully', video });

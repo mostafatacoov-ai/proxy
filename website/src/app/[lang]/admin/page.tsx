@@ -220,12 +220,13 @@ export default function AdminPage() {
           setEditSuccessMessage('');
         }, 1500);
       } else {
-        alert('Update failed');
+        const errData = await res.json().catch(() => ({}));
+        alert(`Update failed: ${errData.error || 'Unknown error'}`);
         setSavingEdit(false);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      alert('Update failed');
+      alert(`Update failed: ${e.message || 'Unknown error'}`);
       setSavingEdit(false);
     }
   };
