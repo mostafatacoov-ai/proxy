@@ -360,7 +360,7 @@ export default function AdminPage() {
 
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Categories</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div className="category-grid">
               {CATEGORIES.map(c => (
                 <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', cursor: 'pointer' }}>
                   <input 
@@ -452,7 +452,7 @@ export default function AdminPage() {
       ) : videos.length === 0 ? (
         <p style={{ color: '#666' }}>No videos uploaded yet.</p>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
+        <div className="video-grid">
           {videos.map((video, index) => (
             <div 
               key={video.id} 
@@ -555,7 +555,7 @@ export default function AdminPage() {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Categories</label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                <div className="category-grid">
                   {CATEGORIES.map(c => (
                     <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', cursor: 'pointer' }}>
                       <input 

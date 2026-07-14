@@ -35,16 +35,16 @@ export default async function Work({ params }: { params: Promise<{ lang: string 
           <p>Go to the /admin page to upload your portfolio.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '3rem', marginTop: '4rem' }}>
+        <div className="video-grid" style={{ marginTop: '4rem' }}>
           {videos.map((video) => (
             <div key={video.id} className="video-card" style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#000', borderRadius: '8px', overflow: 'hidden' }}>
+              <div className="video-card-container">
                 <video 
                   src={video.video_url} 
                   poster={video.thumbnail_url || undefined}
                   preload="none"
                   controls 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  className="video-card-element" 
                 />
               </div>
               <div style={{ marginTop: '1rem' }}>

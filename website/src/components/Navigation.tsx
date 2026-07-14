@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 
 export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: Record<string, any> }) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -16,6 +17,11 @@ export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: Re
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   const switchLang = lang === 'en' ? 'ar' : 'en';
   // Regex to replace the lang part of the URL (e.g. /en/about -> /ar/about)
@@ -35,25 +41,36 @@ export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: Re
           />
         </Link>
       </div>
-      <div className="nav-links">
-        <Link href={`/${lang}`} className="nav-link">{dict.navigation.home}</Link>
-        <Link href={`/${lang}/work`} className="nav-link">{dict.navigation.work}</Link>
+
+      <button 
+        className={`mobile-menu-btn ${mobileMenuOpen ? 'open' : ''}`}
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        aria-label="Toggle navigation menu"
+      >
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
+      </button>
+
+      <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+        <Link href={`/${lang}`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>{dict.navigation.home}</Link>
+        <Link href={`/${lang}/work`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>{dict.navigation.work}</Link>
         <div className="dropdown">
-          <Link href={`/${lang}/services`} className="nav-link">
+          <Link href={`/${lang}/services`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>
             {dict.navigation.services}
           </Link>
           <div className="dropdown-content">
-            <Link href={`/${lang}/services/post-production`}>{dict.navigation.postProduction}</Link>
-            <Link href={`/${lang}/services/production`}>{dict.navigation.production}</Link>
-            <Link href={`/${lang}/services/advertising`}>{dict.navigation.advertising}</Link>
-            <Link href={`/${lang}/services/exclusive`}>{dict.navigation.exclusive}</Link>
-            <Link href={`/${lang}/services/studio`}>{dict.navigation.studio}</Link>
+            <Link href={`/${lang}/services/post-production`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.postProduction}</Link>
+            <Link href={`/${lang}/services/production`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.production}</Link>
+            <Link href={`/${lang}/services/advertising`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.advertising}</Link>
+            <Link href={`/${lang}/services/exclusive`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.exclusive}</Link>
+            <Link href={`/${lang}/services/studio`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.studio}</Link>
           </div>
         </div>
-        <Link href={`/${lang}/about`} className="nav-link">{dict.navigation.about}</Link>
-        <Link href={`/${lang}/contact`} className="nav-link">{dict.navigation.contact}</Link>
+        <Link href={`/${lang}/about`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>{dict.navigation.about}</Link>
+        <Link href={`/${lang}/contact`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>{dict.navigation.contact}</Link>
         
-        <Link href={switchedPath} className="nav-link lang-toggle" style={{ marginLeft: 'auto', borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '1rem' }}>
+        <Link href={switchedPath} className="nav-link lang-toggle" style={{ marginLeft: 'auto', borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '1rem' }} onClick={() => setMobileMenuOpen(false)}>
           {dict.navigation.langToggle}
         </Link>
       </div>
