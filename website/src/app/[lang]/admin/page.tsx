@@ -557,9 +557,9 @@ export default function AdminPage() {
       {editingVideo && (
         <div style={{ 
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
-          background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 
+          background: 'rgba(0,0,0,0.8)', zIndex: 100, overflowY: 'auto', padding: '2rem 1rem'
         }}>
-          <div style={{ background: '#111', padding: '1.5rem', borderRadius: '8px', width: '100%', maxWidth: '500px', border: '1px solid #333', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div style={{ background: '#111', padding: '1.5rem', borderRadius: '8px', width: '100%', maxWidth: '500px', border: '1px solid #333', margin: '0 auto' }}>
             <h2 style={{ marginBottom: '1.5rem', color: '#fff' }}>Edit Video</h2>
             <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               
@@ -579,7 +579,7 @@ export default function AdminPage() {
                 <textarea 
                   value={editDescription} 
                   onChange={e => setEditDescription(e.target.value)} 
-                  rows={4}
+                  rows={3}
                   style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px', resize: 'vertical' }}
                 />
               </div>
@@ -613,7 +613,7 @@ export default function AdminPage() {
                   src={editingVideo.video_url} 
                   poster={editingVideo.thumbnail_url || undefined}
                   controls 
-                  style={{ width: '100%', maxHeight: '300px', background: '#000', borderRadius: '4px', marginBottom: '0.5rem' }} 
+                  style={{ width: '100%', maxHeight: '180px', background: '#000', borderRadius: '4px', marginBottom: '0.5rem' }} 
                 />
                 <button
                   type="button"
@@ -625,7 +625,7 @@ export default function AdminPage() {
                 {(editThumbnailData || editingVideo.thumbnail_url) && (
                   <div style={{ marginTop: '1rem' }}>
                     <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Current Thumbnail</label>
-                    <img src={editThumbnailData || editingVideo.thumbnail_url} alt="Current thumbnail" style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333' }} />
+                    <img src={editThumbnailData || editingVideo.thumbnail_url} alt="Current thumbnail" style={{ width: '100%', maxHeight: '150px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333' }} />
                   </div>
                 )}
               </div>
