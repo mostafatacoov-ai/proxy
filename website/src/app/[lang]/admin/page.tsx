@@ -196,6 +196,7 @@ export default function AdminPage() {
 
       if (res.ok) {
         setEditingVideo(null);
+        alert('Video updated successfully!');
         fetchVideos();
       } else {
         alert('Update failed');
@@ -457,7 +458,7 @@ export default function AdminPage() {
                   </div>
                 </div>
               ) : (
-                <video src={video.video_url} controls style={{ width: '100%', height: '200px', objectFit: 'cover', background: '#000' }} />
+                <video src={video.video_url} preload="none" controls style={{ width: '100%', height: '200px', objectFit: 'cover', background: '#000' }} />
               )}
               
               {/* Drag Handle Icon */}
@@ -555,7 +556,9 @@ export default function AdminPage() {
                 <video 
                   id="editVideoPreview"
                   src={editingVideo.video_url} 
+                  poster={editingVideo.thumbnail_url || undefined}
                   controls 
+                  preload="none"
                   style={{ width: '100%', maxHeight: '300px', background: '#000', borderRadius: '4px', marginBottom: '0.5rem' }} 
                 />
                 <button

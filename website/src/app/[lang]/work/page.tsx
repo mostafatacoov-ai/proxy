@@ -41,6 +41,8 @@ export default async function Work({ params }: { params: Promise<{ lang: string 
               <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#000', borderRadius: '8px', overflow: 'hidden' }}>
                 <video 
                   src={video.video_url} 
+                  poster={video.thumbnail_url || undefined}
+                  preload="none"
                   controls 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                 />

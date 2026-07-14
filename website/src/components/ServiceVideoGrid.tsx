@@ -30,6 +30,7 @@ export default async function ServiceVideoGrid({ serviceName }: ServiceVideoGrid
               src={video.video_url} 
               poster={video.thumbnail_url || undefined}
               controls 
+              preload="none"
               style={{ width: '100%', height: '250px', objectFit: 'cover', background: '#000' }} 
             />
             <div style={{ padding: '1.5rem' }}>
