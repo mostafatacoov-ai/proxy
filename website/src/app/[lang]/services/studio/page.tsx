@@ -8,25 +8,27 @@ export const dynamic = 'force-dynamic';
 export default async function StudioPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang as 'en' | 'ar');
+  const serviceData = dict.services.studio;
 
   return (
     <main className="layout animate-fade-in" style={{ minHeight: '100vh' }}>
       <ThemeSetter themeClass="theme-studio" />
       <ServiceHero 
         title={`PROXY <span style="font-weight: 300">STUDIO</span>`}
-        subtitle={lang === 'en' ? 'State-of-the-art facilities and suites for creative collaboration.' : 'أحدث المرافق والأجنحة للتعاون الإبداعي.'}
+        subtitle={serviceData.headline}
       />
       <div className="container" style={{ paddingTop: '6rem', paddingBottom: '4rem' }}>
-        <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center', fontWeight: 300 }}>About the Service</h2>
+        <p className="lead-text" style={{ maxWidth: '900px', margin: '0 auto 4rem auto', textAlign: 'center', lineHeight: '1.8' }}>
+          {serviceData.intro}
+        </p>
+        <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center', fontWeight: 300 }}>{serviceData.featuresTitle}</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
-          <div className="service-card" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.15)', padding: '3rem' }}>
-            <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Color Suites</h3>
-            <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', lineHeight: '1.6' }}>Calibrated reference monitoring for absolute visual confidence.</p>
-          </div>
-          <div className="service-card" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.15)', padding: '3rem' }}>
-            <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Audio Suites</h3>
-            <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', lineHeight: '1.6' }}>Acoustically treated environments for pristine sound design and mixing.</p>
-          </div>
+          {serviceData.features.map((feature: any, i: number) => (
+            <div key={i} className="service-card" style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.15)', padding: '3rem' }}>
+              <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{feature.title}</h3>
+              <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', lineHeight: '1.6' }}>{feature.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
       <ServiceVideoGrid serviceName="Proxy Studio" />

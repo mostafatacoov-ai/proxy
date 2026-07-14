@@ -8,25 +8,27 @@ export const dynamic = 'force-dynamic';
 export default async function AdvertisingPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang as 'en' | 'ar');
+  const serviceData = dict.services.advertising;
 
   return (
     <main className="layout animate-fade-in" style={{ minHeight: '100vh' }}>
       <ThemeSetter themeClass="theme-advertising" />
       <ServiceHero 
         title={`PROXY <span style="font-weight: 300">ADVERTISING</span>`}
-        subtitle={lang === 'en' ? 'High-impact commercial finishing for global brands and agencies.' : 'تشطيب إعلاني عالي التأثير للعلامات التجارية والوكالات العالمية.'}
+        subtitle={serviceData.headline}
       />
       <div className="container" style={{ paddingTop: '6rem', paddingBottom: '4rem' }}>
-        <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center', fontWeight: 300 }}>About the Service</h2>
+        <p className="lead-text" style={{ maxWidth: '900px', margin: '0 auto 4rem auto', textAlign: 'center', lineHeight: '1.8' }}>
+          {serviceData.intro}
+        </p>
+        <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center', fontWeight: 300 }}>{serviceData.featuresTitle}</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
-          <div className="service-card" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.2)', padding: '3rem' }}>
-            <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Commercial VFX</h3>
-            <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', lineHeight: '1.6' }}>Seamlessly integrating digital elements to elevate brand storytelling.</p>
-          </div>
-          <div className="service-card" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.2)', padding: '3rem' }}>
-            <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Broadcast Deliverables</h3>
-            <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', lineHeight: '1.6' }}>Strict quality control for network and digital platform distribution.</p>
-          </div>
+          {serviceData.features.map((feature: any, i: number) => (
+            <div key={i} className="service-card" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.2)', padding: '3rem' }}>
+              <h3 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{feature.title}</h3>
+              <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', lineHeight: '1.6' }}>{feature.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
       <ServiceVideoGrid serviceName="Proxy Advertising" />

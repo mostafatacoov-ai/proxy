@@ -44,34 +44,65 @@
     "vision": "To be the definitive post-production partner for world-class creators, consistently setting the benchmark for visual brilliance and audio fidelity in the industry."
   },
   "services": {
-    "title": "Post-Production Expertise",
-    "subtitle": "Our facility is equipped to handle the rigorous demands of modern media, delivering polished, broadcast-ready, and cinema-grade deliverables.",
-    "items": [
-      {
-        "num": "01",
-        "title": "Offline & Online Editing",
-        "subtitle": "Crafting the Core Narrative",
-        "desc": "Pacing, rhythm, and structure are the lifeblood of any film. Our editorial team meticulously carves out the story, focusing on the emotional resonance and strategic impact of every cut. We handle both offline storytelling and the high-resolution online conform process, ensuring a flawless transition to the final master."
-      },
-      {
-        "num": "02",
-        "title": "Color Grading",
-        "subtitle": "Sculpting with Light and Tone",
-        "desc": "Color dictates emotion. We provide high-end color grading that establishes the aesthetic identity of your project. Whether achieving a gritty documentary realism or a hyper-stylized commercial look, we ensure absolute color fidelity and visual consistency across every shot, elevating the production value to a premium standard."
-      },
-      {
-        "num": "03",
-        "title": "Visual Effects (VFX)",
-        "subtitle": "Seamless Illusions & Enhancements",
-        "desc": "From subtle cleanups to complex compositing, our VFX pipeline integrates digital elements flawlessly into live-action plates. We specialize in invisible effects that support the narrative without distracting the eye, maintaining the authentic, high-quality feel of your original cinematography."
-      },
-      {
-        "num": "04",
-        "title": "Audio MIX",
-        "subtitle": "Immersive Sound Design & Mixing",
-        "desc": "A premium visual experience requires equally compelling audio. Our mixing services ensure dialogue clarity, dynamic sound design, and balanced scores. We deliver crisp, spatial audio mixes tailored for any destination—from theatrical surround sound to optimized stereo for digital broadcast—ensuring your project is heard exactly as intended."
-      }
-    ]
+    "allServices": {
+      "headline": "The Proxy Ecosystem: End-to-End Excellence.",
+      "intro": "Proxy is a fully integrated creative powerhouse. We bridge the gap between strategic vision and cinematic execution, offering a complete suite of services across production, post-production, advertising, and bespoke studio facilities. Whether you need a comprehensive marketing campaign or the final 4K cinematic color grade for a documentary film, our specialized divisions work in seamless synergy to deliver uncompromised quality."
+    },
+    "postProduction": {
+      "headline": "The Final Polish for World-Class Storytelling.",
+      "intro": "The story doesn’t end when the cameras stop rolling; it only just begins. Proxy Post Production is a specialized facility built to serve the meticulous demands of high-end commercial, documentary, and narrative projects. We are the invisible hand that elevates good footage into an undeniable masterpiece.",
+      "featuresTitle": "Core Services",
+      "features": [
+        { "title": "Offline & Online Editing", "desc": "Shaping the narrative flow. We meticulously carve out the story, focusing on pacing, emotional resonance, and a flawless transition to the final high-resolution master." },
+        { "title": "Color Grading", "desc": "Sculpting with light and tone. From gritty documentary realism to hyper-stylized cinematic colors, we ensure absolute color fidelity and visual consistency across every 4K frame." },
+        { "title": "Visual Effects (VFX)", "desc": "Seamless illusions and enhancements. Our pipeline integrates digital elements flawlessly into live-action plates, maintaining the authentic, high-quality feel of your original cinematography." },
+        { "title": "Audio MIX", "desc": "Immersive sound design. We deliver crisp, spatial audio mixes—from balanced musical scores to crystal-clear dialogue—ensuring your project is heard exactly as intended." }
+      ]
+    },
+    "production": {
+      "headline": "Bringing Bold Visions to the Screen.",
+      "intro": "Proxy Production turns ambitious concepts into tangible reality. We handle the physical execution of your creative vision with precision, assembling top-tier crews and utilizing industry-leading equipment to capture every moment flawlessly.",
+      "featuresTitle": "Core Focus Areas",
+      "features": [
+        { "title": "Commercial Production", "desc": "High-impact visual storytelling designed to elevate brands and captivate target audiences." },
+        { "title": "Documentary Film Production", "desc": "Authentic, compelling, and beautifully shot narratives that explore real-world subjects with cinematic depth." },
+        { "title": "Corporate & Brand Films", "desc": "Translating your company's core mission into engaging, premium video assets." },
+        { "title": "On-Set Execution", "desc": "Full-service physical production management, from location scouting and set design to directing and cinematography." }
+      ]
+    },
+    "advertising": {
+      "headline": "Strategic Creativity. Measurable Impact.",
+      "intro": "Proxy Advertising is your dedicated marketing and brand strategy arm. We don't just create beautiful visuals; we build the strategic foundation that ensures those visuals drive results. We partner with brands to craft compelling identities and multi-channel campaigns that command market share.",
+      "featuresTitle": "Core Services",
+      "features": [
+        { "title": "Brand Identity & Graphic Design", "desc": "Crafting comprehensive visual identities, from custom logo design to complete brand guidelines and premium marketing presentations." },
+        { "title": "Campaign Strategy", "desc": "Developing targeted advertising strategies that connect with your audience across digital, social, and traditional media." },
+        { "title": "Digital Presence", "desc": "Designing and deploying integrated online ecosystems, including tailored e-commerce solutions and responsive web experiences." },
+        { "title": "Content Marketing", "desc": "Producing a consistent stream of high-quality, on-brand content designed to engage and convert." }
+      ]
+    },
+    "exclusive": {
+      "headline": "Bespoke Solutions for Elite Partnerships.",
+      "intro": "Proxy Exclusive is our white-glove, VIP tier reserved for highly confidential, bespoke, or uniquely complex projects. This division provides dedicated resources, priority scheduling, and an unmatched level of personalized service.",
+      "featuresTitle": "The Exclusive Experience",
+      "features": [
+        { "title": "Dedicated Creative Teams", "desc": "A hand-picked team of our senior talent assigned solely to your project from inception to final delivery." },
+        { "title": "Uncompromising Confidentiality", "desc": "Strict NDA protocols and secure, closed-network workflows for sensitive intellectual property and unreleased campaigns." },
+        { "title": "Concierge Project Management", "desc": "24/7 availability and direct access to department heads, ensuring your feedback is implemented instantly." },
+        { "title": "Private Screenings", "desc": "Access to our premium, calibrated screening rooms to review your 4K masters in the perfect viewing environment." }
+      ]
+    },
+    "studio": {
+      "headline": "Your Canvas for Creation.",
+      "intro": "Proxy Studio provides the physical space and the technical infrastructure necessary to execute at the highest level. Our facilities are designed by creatives, for creatives, offering an inspiring and technically flawless environment for your next shoot or session.",
+      "featuresTitle": "Facility Features",
+      "features": [
+        { "title": "Soundstages & Green Screens", "desc": "Acoustically treated, fully controllable environments ready for complex lighting setups and VFX plate shoots." },
+        { "title": "Equipment Rental", "desc": "Access to an in-house arsenal of premium cinema cameras, high-end lenses, and advanced lighting gear." },
+        { "title": "Creative Workspaces", "desc": "Comfortable, client-facing suites and production offices designed for collaboration and focus." },
+        { "title": "Vocal & Foley Booths", "desc": "Isolated recording environments for pristine voiceover, ADR, and custom sound design capture." }
+      ]
+    }
   },
   "contact": {
     "title": "Let's Finalize Your Masterpiece",
