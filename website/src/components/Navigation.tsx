@@ -58,19 +58,24 @@ export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: Re
         <Link href={`/${lang}`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>{dict.navigation.home}</Link>
         <Link href={`/${lang}/work`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>{dict.navigation.work}</Link>
         <div className={`dropdown ${mobileServicesOpen ? 'mobile-services-open' : ''}`}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Link href={`/${lang}/services`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-              {dict.navigation.services}
-            </Link>
-            <button 
-              className="mobile-dropdown-toggle"
-              onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-              aria-label="Toggle services menu"
-            >
-              ▼
-            </button>
-          </div>
+          {/* Desktop Link */}
+          <Link href={`/${lang}/services`} className="nav-link desktop-services-link">
+            {dict.navigation.services}
+          </Link>
+          
+          {/* Mobile Toggle Button */}
+          <button 
+            className="nav-link mobile-services-toggle"
+            onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+          >
+            {dict.navigation.services} <span style={{ fontSize: '0.8rem', marginLeft: '0.5rem', transition: 'transform 0.3s', transform: mobileServicesOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+          </button>
+
           <div className="dropdown-content">
+            {/* Added link to main services page for mobile users */}
+            <Link href={`/${lang}/services`} className="mobile-only-link" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--primary)' }}>
+              {lang === 'ar' ? 'كل الخدمات' : 'All Services'}
+            </Link>
             <Link href={`/${lang}/services/post-production`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.postProduction}</Link>
             <Link href={`/${lang}/services/production`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.production}</Link>
             <Link href={`/${lang}/services/advertising`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.advertising}</Link>
