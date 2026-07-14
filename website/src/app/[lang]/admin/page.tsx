@@ -23,6 +23,7 @@ type Video = {
 export default function AdminPage() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filterCategory, setFilterCategory] = useState<string>('All');
   
   // Upload State
   const [file, setFile] = useState<File | null>(null);
@@ -244,13 +245,31 @@ export default function AdminPage() {
     setDragOverItemIndex(null);
   };
 
+  const filteredVideos = filterCategory === 'All' 
+    ? videos 
+    : videos.filter(v => v.category && v.category.includes(filterCategory));
+
   const handleDrop = (index: number) => {
     if (draggedItemIndex === null) return;
     if (draggedItemIndex !== index) {
+      const newFilteredVideos = [...filteredVideos];
+      const draggedItem = newFilteredVideos[draggedItemIndex];
+      newFilteredVideos.splice(draggedItemIndex, 1);
+      newFilteredVideos.splice(index, 0, draggedItem);
+      
       const newVideos = [...videos];
-      const draggedItem = newVideos[draggedItemIndex];
-      newVideos.splice(draggedItemIndex, 1);
-      newVideos.splice(index, 0, draggedItem);
+      // Get the original indices of the filtered items in the main array
+      const originalIndices = filteredVideos
+        .map(v => videos.findIndex(mainV => mainV.id === v.id))
+        .sort((a, b) => a - b);
+        
+      // Place the newly sorted items back into those exact slots
+      originalIndices.forEach((mainIndex, i) => {
+        if (mainIndex !== -1) {
+          newVideos[mainIndex] = newFilteredVideos[i];
+        }
+      });
+      
       setVideos(newVideos);
       setHasUnsavedOrder(true);
     }
@@ -427,7 +446,17 @@ export default function AdminPage() {
 
       {/* Videos List Section */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h2 style={{ margin: 0, color: '#fff' }}>Manage Videos</h2>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <h2 style={{ margin: 0, color: '#fff' }}>Manage Videos</h2>
+          <select 
+            value={filterCategory}
+            onChange={e => setFilterCategory(e.target.value)}
+            style={{ padding: '0.5rem', background: '#222', color: '#fff', border: '1px solid #444', borderRadius: '4px' }}
+          >
+            <option value="All">All Categories</option>
+            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
         {hasUnsavedOrder && (
           <button 
             onClick={handleSaveOrder} 
@@ -451,9 +480,11 @@ export default function AdminPage() {
         <p>Loading...</p>
       ) : videos.length === 0 ? (
         <p style={{ color: '#666' }}>No videos uploaded yet.</p>
+      ) : filteredVideos.length === 0 ? (
+        <p style={{ color: '#666' }}>No videos found in this category.</p>
       ) : (
         <div className="video-grid">
-          {videos.map((video, index) => (
+          {filteredVideos.map((video, index) => (
             <div 
               key={video.id} 
               draggable

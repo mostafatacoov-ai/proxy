@@ -10,15 +10,27 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
-    // Since we sort by created_at descending in GET, 
-    // the first video should have the newest timestamp.
-    const now = Date.now();
+    // Fetch current created_at timestamps for these specific videos
+    const { data: currentVideos, error: fetchError } = await supabase
+      .from('videos')
+      .select('id, created_at')
+      .in('id', videoIds);
+
+    if (fetchError || !currentVideos) {
+      console.error('Failed to fetch current timestamps:', fetchError);
+      return NextResponse.json({ error: 'Failed to fetch current timestamps' }, { status: 500 });
+    }
+
+    // Sort timestamps descending (newest first)
+    const sortedTimestamps = currentVideos
+      .map(v => v.created_at)
+      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
     
     // Process sequentially to avoid connection limit issues if there are many videos
     for (let i = 0; i < videoIds.length; i++) {
       const id = videoIds[i];
-      // Subtract seconds so they stay in order (first is newest)
-      const newDate = new Date(now - i * 1000).toISOString();
+      // Assign the largest timestamp to the first item, etc.
+      const newDate = sortedTimestamps[i];
       
       const { error } = await supabase
         .from('videos')
