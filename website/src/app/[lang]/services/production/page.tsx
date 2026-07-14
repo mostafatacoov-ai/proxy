@@ -3,6 +3,8 @@ import ThemeSetter from "@/components/ThemeSetter";
 import ServiceHero from "@/components/ServiceHero";
 import ServiceVideoGrid from "@/components/ServiceVideoGrid";
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductionPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang as 'en' | 'ar');

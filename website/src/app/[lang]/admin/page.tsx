@@ -572,7 +572,6 @@ export default function AdminPage() {
                   src={editingVideo.video_url} 
                   poster={editingVideo.thumbnail_url || undefined}
                   controls 
-                  preload="none"
                   style={{ width: '100%', maxHeight: '300px', background: '#000', borderRadius: '4px', marginBottom: '0.5rem' }} 
                 />
                 <button
