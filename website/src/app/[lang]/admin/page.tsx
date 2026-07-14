@@ -40,6 +40,8 @@ export default function AdminPage() {
   const [editDescription, setEditDescription] = useState('');
   const [editCategory, setEditCategory] = useState<string[]>([]);
   const [editThumbnailData, setEditThumbnailData] = useState<string | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editSuccessMessage, setEditSuccessMessage] = useState('');
 
   // Reorder State
   const [hasUnsavedOrder, setHasUnsavedOrder] = useState(false);
@@ -176,11 +178,16 @@ export default function AdminPage() {
     setEditDescription(v.description);
     setEditCategory(v.category ? v.category.split(',') : []);
     setEditThumbnailData(null);
+    setEditSuccessMessage('');
+    setSavingEdit(false);
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingVideo) return;
+    
+    setSavingEdit(true);
+    setEditSuccessMessage('');
     
     try {
       const res = await fetch(`/api/videos/${editingVideo.id}`, {
@@ -195,15 +202,22 @@ export default function AdminPage() {
       });
 
       if (res.ok) {
-        setEditingVideo(null);
-        alert('Video updated successfully!');
+        setEditSuccessMessage('Video updated successfully!');
         fetchVideos();
+        // Close modal after showing success message briefly
+        setTimeout(() => {
+          setEditingVideo(null);
+          setSavingEdit(false);
+          setEditSuccessMessage('');
+        }, 1500);
       } else {
         alert('Update failed');
+        setSavingEdit(false);
       }
     } catch (e) {
       console.error(e);
       alert('Update failed');
+      setSavingEdit(false);
     }
   };
 
@@ -576,17 +590,25 @@ export default function AdminPage() {
                 )}
               </div>
 
+              {editSuccessMessage && (
+                <div style={{ padding: '1rem', background: 'rgba(40, 167, 69, 0.2)', color: '#4ade80', border: '1px solid #28a745', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold' }}>
+                  {editSuccessMessage}
+                </div>
+              )}
+
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
                 <button 
                   type="submit" 
-                  style={{ flex: 1, padding: '1rem', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontWeight: 'bold', borderRadius: '4px' }}
+                  disabled={savingEdit}
+                  style={{ flex: 1, padding: '1rem', background: '#fff', color: '#000', border: 'none', cursor: savingEdit ? 'not-allowed' : 'pointer', fontWeight: 'bold', borderRadius: '4px', opacity: savingEdit ? 0.7 : 1 }}
                 >
-                  Save Changes
+                  {savingEdit ? 'Saving...' : 'Save Changes'}
                 </button>
                 <button 
                   type="button" 
+                  disabled={savingEdit}
                   onClick={() => setEditingVideo(null)}
-                  style={{ flex: 1, padding: '1rem', background: '#333', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold', borderRadius: '4px' }}
+                  style={{ flex: 1, padding: '1rem', background: '#333', color: '#fff', border: 'none', cursor: savingEdit ? 'not-allowed' : 'pointer', fontWeight: 'bold', borderRadius: '4px', opacity: savingEdit ? 0.7 : 1 }}
                 >
                   Cancel
                 </button>
