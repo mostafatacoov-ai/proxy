@@ -287,7 +287,7 @@ export default function AdminPage() {
       <h1 className="section-title" style={{ fontSize: '2rem', marginBottom: '2rem' }}>Admin Dashboard</h1>
 
       {/* Upload Section */}
-      <div style={{ background: '#111', padding: '2rem', borderRadius: '8px', marginBottom: '3rem', border: '1px solid #333' }}>
+      <div style={{ background: '#111', padding: '1.5rem', borderRadius: '8px', marginBottom: '3rem', border: '1px solid #333' }}>
         <h2 style={{ marginBottom: '1.5rem', color: '#fff' }}>Upload New Video</h2>
         <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           
@@ -426,7 +426,7 @@ export default function AdminPage() {
       </div>
 
       {/* Videos List Section */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h2 style={{ margin: 0, color: '#fff' }}>Manage Videos</h2>
         {hasUnsavedOrder && (
           <button 
@@ -528,7 +528,7 @@ export default function AdminPage() {
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
           background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 
         }}>
-          <div style={{ background: '#111', padding: '2rem', borderRadius: '8px', width: '100%', maxWidth: '500px', border: '1px solid #333' }}>
+          <div style={{ background: '#111', padding: '1.5rem', borderRadius: '8px', width: '100%', maxWidth: '500px', border: '1px solid #333', maxHeight: '90vh', overflowY: 'auto' }}>
             <h2 style={{ marginBottom: '1.5rem', color: '#fff' }}>Edit Video</h2>
             <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               
