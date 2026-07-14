@@ -16,6 +16,7 @@ type Video = {
   description: string;
   category: string;
   video_url: string;
+  thumbnail_url?: string;
   created_at: string;
 };
 
@@ -25,9 +26,11 @@ export default function AdminPage() {
   
   // Upload State
   const [file, setFile] = useState<File | null>(null);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
+  const [thumbnailData, setThumbnailData] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState(CATEGORIES[0]);
+  const [category, setCategory] = useState<string[]>([CATEGORIES[0]]);
   const [uploading, setUploading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   
@@ -35,7 +38,8 @@ export default function AdminPage() {
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
-  const [editCategory, setEditCategory] = useState('');
+  const [editCategory, setEditCategory] = useState<string[]>([]);
+  const [editThumbnailData, setEditThumbnailData] = useState<string | null>(null);
 
   // Reorder State
   const [hasUnsavedOrder, setHasUnsavedOrder] = useState(false);
@@ -60,6 +64,21 @@ export default function AdminPage() {
     }
   };
 
+  const captureThumbnail = (videoElementId: string, setThumbnailState: (data: string) => void) => {
+    const video = document.getElementById(videoElementId) as HTMLVideoElement;
+    if (!video) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      setThumbnailState(dataUrl);
+    }
+  };
+
   useEffect(() => {
     fetchVideos();
   }, []);
@@ -68,7 +87,10 @@ export default function AdminPage() {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !title || !category) return;
+    if (!file || !title || category.length === 0) {
+      alert("Please provide a file, title, and at least one category.");
+      return;
+    }
     
     setUploading(true);
     setUploadProgress(0);
@@ -92,7 +114,10 @@ export default function AdminPage() {
         // Always pass metadata so it's available on the final chunk
         formData.append('title', title);
         formData.append('description', description);
-        formData.append('category', category);
+        formData.append('category', category.join(','));
+        if (thumbnailData) {
+          formData.append('thumbnail', thumbnailData);
+        }
 
         const response = await fetch('/api/videos', {
           method: 'POST',
@@ -112,7 +137,10 @@ export default function AdminPage() {
       // Success
       setTitle('');
       setDescription('');
+      setCategory([CATEGORIES[0]]);
       setFile(null);
+      setVideoPreviewUrl(null);
+      setThumbnailData(null);
       const fileInput = document.getElementById('videoFile') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
       
@@ -146,7 +174,8 @@ export default function AdminPage() {
     setEditingVideo(v);
     setEditTitle(v.title);
     setEditDescription(v.description);
-    setEditCategory(v.category);
+    setEditCategory(v.category ? v.category.split(',') : []);
+    setEditThumbnailData(null);
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -160,7 +189,8 @@ export default function AdminPage() {
         body: JSON.stringify({
           title: editTitle,
           description: editDescription,
-          category: editCategory
+          category: editCategory.join(','),
+          thumbnail: editThumbnailData
         })
       });
 
@@ -242,11 +272,45 @@ export default function AdminPage() {
               id="videoFile"
               type="file" 
               accept="video/*" 
-              onChange={e => setFile(e.target.files?.[0] || null)} 
+              onChange={e => {
+                const f = e.target.files?.[0] || null;
+                setFile(f);
+                if (f) {
+                  setVideoPreviewUrl(URL.createObjectURL(f));
+                } else {
+                  setVideoPreviewUrl(null);
+                  setThumbnailData(null);
+                }
+              }} 
               required
               style={{ color: '#fff' }}
             />
           </div>
+
+          {videoPreviewUrl && (
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Video Preview & Thumbnail Capture</label>
+              <video 
+                id="uploadVideoPreview"
+                src={videoPreviewUrl} 
+                controls 
+                style={{ width: '100%', maxHeight: '300px', background: '#000', borderRadius: '4px', marginBottom: '0.5rem' }} 
+              />
+              <button
+                type="button"
+                onClick={() => captureThumbnail('uploadVideoPreview', setThumbnailData)}
+                style={{ padding: '0.5rem 1rem', background: '#444', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
+              >
+                📸 Capture Frame as Thumbnail
+              </button>
+              {thumbnailData && (
+                <div style={{ marginTop: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Captured Thumbnail</label>
+                  <img src={thumbnailData} alt="Captured thumbnail" style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333' }} />
+                </div>
+              )}
+            </div>
+          )}
 
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Title</label>
@@ -270,14 +334,25 @@ export default function AdminPage() {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Category</label>
-            <select 
-              value={category} 
-              onChange={e => setCategory(e.target.value)} 
-              style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px' }}
-            >
-              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Categories</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+              {CATEGORIES.map(c => (
+                <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', cursor: 'pointer' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={category.includes(c)}
+                    onChange={e => {
+                      if (e.target.checked) {
+                        setCategory([...category, c]);
+                      } else {
+                        setCategory(category.filter(cat => cat !== c));
+                      }
+                    }}
+                  />
+                  <span style={{ fontSize: '0.9rem' }}>{c}</span>
+                </label>
+              ))}
+            </div>
           </div>
 
           {uploading && (
@@ -374,7 +449,16 @@ export default function AdminPage() {
                 transition: 'all 0.2s ease'
               }}
             >
-              <video src={video.video_url} controls style={{ width: '100%', height: '200px', objectFit: 'cover', background: '#000' }} />
+              {video.thumbnail_url ? (
+                <div style={{ position: 'relative', width: '100%', height: '200px', background: '#000' }}>
+                  <img src={video.thumbnail_url} alt={video.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0,0,0,0.5)', borderRadius: '50%', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  </div>
+                </div>
+              ) : (
+                <video src={video.video_url} controls style={{ width: '100%', height: '200px', objectFit: 'cover', background: '#000' }} />
+              )}
               
               {/* Drag Handle Icon */}
               <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10, background: 'rgba(0,0,0,0.6)', padding: '0.4rem', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
@@ -445,14 +529,48 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Category</label>
-                <select 
-                  value={editCategory} 
-                  onChange={e => setEditCategory(e.target.value)} 
-                  style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px' }}
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Categories</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  {CATEGORIES.map(c => (
+                    <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', cursor: 'pointer' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={editCategory.includes(c)}
+                        onChange={e => {
+                          if (e.target.checked) {
+                            setEditCategory([...editCategory, c]);
+                          } else {
+                            setEditCategory(editCategory.filter(cat => cat !== c));
+                          }
+                        }}
+                      />
+                      <span style={{ fontSize: '0.9rem' }}>{c}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Video Preview & Thumbnail Update</label>
+                <video 
+                  id="editVideoPreview"
+                  src={editingVideo.video_url} 
+                  controls 
+                  style={{ width: '100%', maxHeight: '300px', background: '#000', borderRadius: '4px', marginBottom: '0.5rem' }} 
+                />
+                <button
+                  type="button"
+                  onClick={() => captureThumbnail('editVideoPreview', setEditThumbnailData)}
+                  style={{ padding: '0.5rem 1rem', background: '#444', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
                 >
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                  📸 Capture Frame as New Thumbnail
+                </button>
+                {(editThumbnailData || editingVideo.thumbnail_url) && (
+                  <div style={{ marginTop: '1rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Current Thumbnail</label>
+                    <img src={editThumbnailData || editingVideo.thumbnail_url} alt="Current thumbnail" style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333' }} />
+                  </div>
+                )}
               </div>
 
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>

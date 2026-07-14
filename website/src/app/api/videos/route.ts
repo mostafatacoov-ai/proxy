@@ -63,10 +63,26 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'Missing title or category on final chunk' }, { status: 400 });
         }
 
+        const thumbnailBase64 = formData.get('thumbnail') as string | null;
+        let thumbnailUrl = null;
+
+        if (thumbnailBase64) {
+          const matches = thumbnailBase64.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+          if (matches && matches.length === 3) {
+            const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+            const data = matches[2];
+            const buffer = Buffer.from(data, 'base64');
+            const thumbFileName = `${uniqueFileId}-thumb.${ext}`;
+            const thumbFilePath = path.join(uploadDir, thumbFileName);
+            await fsPromises.writeFile(thumbFilePath, buffer);
+            thumbnailUrl = `/api/videos/thumbnail/${thumbFileName}`;
+          }
+        }
+
         const videoUrl = `/api/videos/stream/${finalFileName}`;
         const { data: dbData, error: dbError } = await supabase
           .from('videos')
-          .insert([{ title, description: description || '', category, video_url: videoUrl }])
+          .insert([{ title, description: description || '', category, video_url: videoUrl, thumbnail_url: thumbnailUrl }])
           .select()
           .single();
 
@@ -111,10 +127,26 @@ export async function POST(request: Request) {
       throw err;
     }
 
+    const thumbnailBase64 = formData.get('thumbnail') as string | null;
+    let thumbnailUrl = null;
+
+    if (thumbnailBase64) {
+      const matches = thumbnailBase64.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+        const data = matches[2];
+        const buffer = Buffer.from(data, 'base64');
+        const thumbFileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}-thumb.${ext}`;
+        const thumbFilePath = path.join(uploadDir, thumbFileName);
+        await fsPromises.writeFile(thumbFilePath, buffer);
+        thumbnailUrl = `/api/videos/thumbnail/${thumbFileName}`;
+      }
+    }
+
     const videoUrl = `/api/videos/stream/${fileName}`;
     const { data: dbData, error: dbError } = await supabase
       .from('videos')
-      .insert([{ title, description: description || '', category, video_url: videoUrl }])
+      .insert([{ title, description: description || '', category, video_url: videoUrl, thumbnail_url: thumbnailUrl }])
       .select()
       .single();
 
