@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: Record<string, any> }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: Re
   // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
+    setMobileServicesOpen(false);
   }, [pathname]);
 
   const switchLang = lang === 'en' ? 'ar' : 'en';
@@ -55,10 +57,19 @@ export default function Navigation({ lang, dict }: { lang: 'en' | 'ar', dict: Re
       <div className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`}>
         <Link href={`/${lang}`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>{dict.navigation.home}</Link>
         <Link href={`/${lang}/work`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>{dict.navigation.work}</Link>
-        <div className="dropdown">
-          <Link href={`/${lang}/services`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>
-            {dict.navigation.services}
-          </Link>
+        <div className={`dropdown ${mobileServicesOpen ? 'mobile-services-open' : ''}`}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Link href={`/${lang}/services`} className="nav-link" onClick={() => setMobileMenuOpen(false)}>
+              {dict.navigation.services}
+            </Link>
+            <button 
+              className="mobile-dropdown-toggle"
+              onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+              aria-label="Toggle services menu"
+            >
+              ▼
+            </button>
+          </div>
           <div className="dropdown-content">
             <Link href={`/${lang}/services/post-production`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.postProduction}</Link>
             <Link href={`/${lang}/services/production`} onClick={() => setMobileMenuOpen(false)}>{dict.navigation.production}</Link>

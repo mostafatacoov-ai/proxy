@@ -240,6 +240,10 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--primary);
 }
 
+.mobile-dropdown-toggle {
+  display: none;
+}
+
 /* Hero Section */
 .hero-section {
   position: relative;
@@ -724,6 +728,7 @@ h1, h2, h3, h4, h5, h6 {
     transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
     transform: translateY(-100%);
     z-index: 90;
+    overflow-y: auto;
   }
 
   .nav-links.mobile-open {
@@ -734,7 +739,24 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1.5rem;
   }
 
+  .mobile-dropdown-toggle {
+    display: inline-block;
+    background: none;
+    border: none;
+    color: var(--foreground);
+    padding: 0.5rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+  }
+
+  .dropdown.mobile-services-open .mobile-dropdown-toggle {
+    transform: rotate(180deg);
+  }
+
   .dropdown-content {
+    display: none;
     position: static;
     transform: none;
     background: transparent;
@@ -742,12 +764,17 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: none;
     min-width: 100%;
     margin-top: 1rem;
-    display: flex; /* Always show in mobile if parent dropdown is tapped, but for simplicity we can just list them */
+    flex-direction: column;
+  }
+
+  .dropdown.mobile-services-open .dropdown-content {
+    display: flex;
   }
 
   /* Specific mobile dropdown styles if needed */
   .dropdown {
     text-align: center;
+    width: 100%;
   }
   
   .dropdown-content a {
