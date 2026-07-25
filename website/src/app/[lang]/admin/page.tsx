@@ -337,8 +337,9 @@ export default function AdminPage() {
               <video 
                 id="uploadVideoPreview"
                 src={videoPreviewUrl} 
+                preload="metadata"
                 controls 
-                style={{ width: '100%', maxHeight: '300px', background: '#000', borderRadius: '4px', marginBottom: '0.5rem' }} 
+                style={{ width: '100%', height: 'auto', maxHeight: '450px', objectFit: 'contain', background: '#000', borderRadius: '4px', marginBottom: '0.5rem', display: 'block' }} 
               />
               <button
                 type="button"
@@ -350,7 +351,7 @@ export default function AdminPage() {
               {thumbnailData && (
                 <div style={{ marginTop: '1rem' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Captured Thumbnail</label>
-                  <img src={thumbnailData} alt="Captured thumbnail" style={{ width: '100%', maxHeight: '200px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333' }} />
+                  <img src={thumbnailData} alt="Captured thumbnail" style={{ width: '100%', height: 'auto', maxHeight: '350px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333', display: 'block' }} />
                 </div>
               )}
             </div>
@@ -506,14 +507,14 @@ export default function AdminPage() {
               }}
             >
               {video.thumbnail_url ? (
-                <div style={{ position: 'relative', width: '100%', height: '200px', background: '#000' }}>
-                  <img src={video.thumbnail_url} alt={video.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', maxHeight: '550px', overflow: 'hidden' }}>
+                  <img src={video.thumbnail_url} alt={video.title} style={{ width: '100%', height: 'auto', maxHeight: '550px', objectFit: 'contain', display: 'block' }} />
                   <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0,0,0,0.5)', borderRadius: '50%', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                   </div>
                 </div>
               ) : (
-                <video src={video.video_url} preload="none" controls style={{ width: '100%', height: '200px', objectFit: 'cover', background: '#000' }} />
+                <video src={video.video_url} preload="metadata" controls style={{ width: '100%', height: 'auto', maxHeight: '550px', objectFit: 'contain', display: 'block', background: '#000' }} />
               )}
               
               {/* Drag Handle Icon */}
@@ -612,8 +613,9 @@ export default function AdminPage() {
                   id="editVideoPreview"
                   src={editingVideo.video_url} 
                   poster={editingVideo.thumbnail_url || undefined}
+                  preload="metadata"
                   controls 
-                  style={{ width: '100%', maxHeight: '180px', background: '#000', borderRadius: '4px', marginBottom: '0.5rem' }} 
+                  style={{ width: '100%', height: 'auto', maxHeight: '400px', objectFit: 'contain', background: '#000', borderRadius: '4px', marginBottom: '0.5rem', display: 'block' }} 
                 />
                 <button
                   type="button"
@@ -625,7 +627,7 @@ export default function AdminPage() {
                 {(editThumbnailData || editingVideo.thumbnail_url) && (
                   <div style={{ marginTop: '1rem' }}>
                     <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Current Thumbnail</label>
-                    <img src={editThumbnailData || editingVideo.thumbnail_url} alt="Current thumbnail" style={{ width: '100%', maxHeight: '150px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333' }} />
+                    <img src={editThumbnailData || editingVideo.thumbnail_url} alt="Current thumbnail" style={{ width: '100%', height: 'auto', maxHeight: '300px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333', display: 'block' }} />
                   </div>
                 )}
               </div>

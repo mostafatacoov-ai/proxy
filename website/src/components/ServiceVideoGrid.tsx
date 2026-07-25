@@ -31,7 +31,7 @@ export default async function ServiceVideoGrid({ serviceName }: ServiceVideoGrid
                 src={video.video_url} 
                 poster={video.thumbnail_url || undefined}
                 controls 
-                preload="none"
+                preload="metadata"
                 className="video-card-element"
               />
             </div>

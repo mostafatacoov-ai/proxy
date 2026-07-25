@@ -657,25 +657,28 @@ h1, h2, h3, h4, h5, h6 {
 .video-card-container {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #000;
   border-radius: 8px;
   overflow: hidden;
+  max-height: 650px;
 }
 
 .video-card-element {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  max-height: 650px;
+  object-fit: contain;
+  display: block;
 }
 
 .video-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
+  align-items: start;
 }
 
 .category-grid {

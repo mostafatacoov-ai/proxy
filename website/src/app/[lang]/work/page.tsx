@@ -42,7 +42,7 @@ export default async function Work({ params }: { params: Promise<{ lang: string 
                 <video 
                   src={video.video_url} 
                   poster={video.thumbnail_url || undefined}
-                  preload="none"
+                  preload="metadata"
                   controls 
                   className="video-card-element" 
                 />
