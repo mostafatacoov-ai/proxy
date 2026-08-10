@@ -1,5 +1,6 @@
 import { getDictionary } from "@/getDictionary";
 import { supabase } from '@/lib/supabase';
+import VideoCard from '@/components/VideoCard';
 
 export const revalidate = 0; // Ensure fresh data on every request
 
@@ -37,38 +38,7 @@ export default async function Work({ params }: { params: Promise<{ lang: string 
       ) : (
         <div className="video-grid" style={{ marginTop: '4rem' }}>
           {videos.map((video) => (
-            <div key={video.id} className="video-card" style={{ display: 'flex', flexDirection: 'column' }}>
-              <div className="video-card-container">
-                <video 
-                  src={video.video_url} 
-                  poster={video.thumbnail_url || undefined}
-                  preload="metadata"
-                  controls 
-                  className="video-card-element" 
-                />
-              </div>
-              <div style={{ marginTop: '1rem' }}>
-                <span style={{ 
-                  display: 'inline-block', 
-                  padding: '0.2rem 0.6rem', 
-                  background: '#222', 
-                  color: '#aaa', 
-                  fontSize: '0.75rem', 
-                  textTransform: 'uppercase', 
-                  letterSpacing: '1px',
-                  borderRadius: '4px',
-                  marginBottom: '0.5rem'
-                }}>
-                  {video.category}
-                </span>
-                <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem', color: '#fff' }}>{video.title}</h3>
-                {video.description && (
-                  <p style={{ color: '#888', fontSize: '1rem', lineHeight: '1.5' }}>
-                    {video.description}
-                  </p>
-                )}
-              </div>
-            </div>
+            <VideoCard key={video.id} video={video} showDetails={true} />
           ))}
         </div>
       )}

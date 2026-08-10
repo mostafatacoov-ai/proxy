@@ -23,14 +23,26 @@ export async function PUT(request: Request) {
 
     // Sort timestamps descending (newest first)
     const sortedTimestamps = currentVideos
-      .map(v => v.created_at)
-      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+      .map(v => new Date(v.created_at).getTime())
+      .sort((a, b) => b - a);
+      
+    // Ensure timestamps are strictly decreasing to prevent arbitrary sorting by the database
+    const strictlyDecreasingTimestamps = [];
+    let lastTime = sortedTimestamps[0] + 1000;
+    for (let i = 0; i < videoIds.length; i++) {
+      let thisTime = sortedTimestamps[i];
+      if (thisTime >= lastTime) {
+        thisTime = lastTime - 1; // force it to be at least 1ms older
+      }
+      strictlyDecreasingTimestamps.push(new Date(thisTime).toISOString());
+      lastTime = thisTime;
+    }
     
     // Process sequentially to avoid connection limit issues if there are many videos
     for (let i = 0; i < videoIds.length; i++) {
       const id = videoIds[i];
-      // Assign the largest timestamp to the first item, etc.
-      const newDate = sortedTimestamps[i];
+      // Assign the strictly decreasing timestamp to the first item, etc.
+      const newDate = strictlyDecreasingTimestamps[i];
       
       const { error } = await supabase
         .from('videos')

@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-
+import VideoCard from '@/components/VideoCard';
 interface ServiceVideoGridProps {
   serviceName: string;
 }
@@ -25,25 +25,7 @@ export default async function ServiceVideoGrid({ serviceName }: ServiceVideoGrid
       <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center', fontWeight: 300 }}>Featured Work</h2>
       <div className="video-grid">
         {videos.map((video) => (
-          <div key={video.id} className="service-card" style={{ background: 'rgba(0,0,0,0.4)', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
-            <div className="video-card-container">
-              <video 
-                src={video.video_url} 
-                poster={video.thumbnail_url || undefined}
-                controls 
-                preload="metadata"
-                className="video-card-element"
-              />
-            </div>
-            <div style={{ padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>{video.title}</h3>
-              {video.description && (
-                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                  {video.description}
-                </p>
-              )}
-            </div>
-          </div>
+          <VideoCard key={video.id} video={video} showDetails={true} />
         ))}
       </div>
     </div>
