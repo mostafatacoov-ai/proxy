@@ -16,7 +16,7 @@ export default async function AdvertisingPage({ params }: { params: Promise<{ la
   const { data: latestVideo } = await supabase
     .from('videos')
     .select('video_url')
-    .eq('category', 'Proxy Advertising')
+    .ilike('category', '%Proxy Advertising%')
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();

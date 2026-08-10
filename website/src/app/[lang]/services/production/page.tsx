@@ -17,7 +17,7 @@ export default async function ProductionPage({ params }: { params: Promise<{ lan
   const { data: latestVideo } = await supabase
     .from('videos')
     .select('video_url')
-    .eq('category', 'Proxy Production')
+    .ilike('category', '%Proxy Production%')
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();

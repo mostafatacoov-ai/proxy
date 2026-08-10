@@ -18,9 +18,13 @@ export default async function Services({ params }: { params: Promise<{ lang: str
   const categorySamples: Record<string, { video_url: string, thumbnail_url: string | null }> = {};
   if (videos) {
     videos.forEach(v => {
-      // Keep only the first (latest) video for each category
-      if (!categorySamples[v.category]) {
-        categorySamples[v.category] = { video_url: v.video_url, thumbnail_url: v.thumbnail_url };
+      if (v.category) {
+        const cats = v.category.split(',').map((c: string) => c.trim());
+        cats.forEach((cat: string) => {
+          if (!categorySamples[cat]) {
+            categorySamples[cat] = { video_url: v.video_url, thumbnail_url: v.thumbnail_url };
+          }
+        });
       }
     });
   }

@@ -16,7 +16,7 @@ export default async function ExclusivePage({ params }: { params: Promise<{ lang
   const { data: latestVideo } = await supabase
     .from('videos')
     .select('video_url')
-    .eq('category', 'Proxy Exclusive')
+    .ilike('category', '%Proxy Exclusive%')
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();

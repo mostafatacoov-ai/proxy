@@ -17,7 +17,7 @@ export default async function PostProductionPage({ params }: { params: Promise<{
   const { data: latestVideo } = await supabase
     .from('videos')
     .select('video_url')
-    .eq('category', 'Proxy Post Production')
+    .ilike('category', '%Proxy Post Production%')
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle();
