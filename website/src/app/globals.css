@@ -834,7 +834,7 @@ h1, h2, h3, h4, h5, h6 {
 .video-thumbnail-container {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   background: #000;
   border-radius: 8px;
   overflow: hidden;
@@ -1094,6 +1094,55 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Bento Features Grid */
+.video-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 250px;
+  gap: 1.5rem;
+  grid-auto-flow: dense;
+}
+
+.bento-shape-large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.bento-shape-tall {
+  grid-column: span 1;
+  grid-row: span 2;
+}
+
+.bento-shape-wide {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.bento-shape-standard {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+@media (max-width: 1024px) {
+  .video-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .video-bento-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+  .bento-shape-large, .bento-shape-tall, .bento-shape-wide, .bento-shape-standard {
+    grid-column: span 1;
+    grid-row: span 1;
+    aspect-ratio: 16 / 9;
+  }
+  .bento-shape-tall {
+    aspect-ratio: 9 / 16;
+  }
+}
+
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getBentoShape } from '@/utils/bento';
 
 const CATEGORIES = [
   'Proxy Post Production',
@@ -484,9 +485,10 @@ export default function AdminPage() {
       ) : filteredVideos.length === 0 ? (
         <p style={{ color: '#666' }}>No videos found in this category.</p>
       ) : (
-        <div className="video-grid">
+        <div className="video-bento-grid">
           {filteredVideos.map((video, index) => (
             <div 
+              className={`service-card ${getBentoShape(index)}`}
               key={video.id} 
               draggable
               onDragStart={() => handleDragStart(index)}
@@ -507,14 +509,14 @@ export default function AdminPage() {
               }}
             >
               {video.thumbnail_url ? (
-                <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', overflow: 'hidden' }}>
+                <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', overflow: 'hidden' }}>
                   <img src={video.thumbnail_url} alt={video.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0,0,0,0.5)', borderRadius: '50%', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                   </div>
                 </div>
               ) : (
-                <video src={video.video_url} preload="metadata" controls style={{ width: '100%', height: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block', background: '#000' }} />
+                <video src={video.video_url} preload="metadata" controls style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', background: '#000' }} />
               )}
               
               {/* Drag Handle Icon */}
