@@ -42,11 +42,12 @@ export default function AnimatedServiceCard({ href, title, desc, ctaText, videoU
           {videoUrl && (
             <video
               ref={videoRef}
-              src={videoUrl}
+              src={videoUrl.includes('#t=') ? videoUrl : `${videoUrl}#t=0.1`}
               muted
               loop
               playsInline
-              className={`card-bg-video ${isHovered ? 'visible' : ''}`}
+              preload="metadata"
+              className={`card-bg-video ${isHovered || !thumbnailUrl ? 'visible' : ''}`}
             />
           )}
           {/* Fallback/Thumbnail layer */}

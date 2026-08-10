@@ -8,7 +8,7 @@ interface ServiceHeroProps {
   videoUrl?: string;
 }
 
-export default function ServiceHero({ title, subtitle, videoUrl = "/api/videos/stream/final_V5_G.mp4" }: ServiceHeroProps) {
+export default function ServiceHero({ title, subtitle, videoUrl = "/videos/final_V5_G.mp4" }: ServiceHeroProps) {
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -29,6 +29,7 @@ export default function ServiceHero({ title, subtitle, videoUrl = "/api/videos/s
           loop
           muted={isMuted}
           playsInline
+          preload="metadata"
           src={videoUrl}
         />
         <div className="video-overlay" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)' }}></div>
