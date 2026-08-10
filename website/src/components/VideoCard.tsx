@@ -12,10 +12,9 @@ interface VideoCardProps {
     thumbnail_url?: string;
   };
   showDetails?: boolean;
-  shapeClass?: string;
 }
 
-export default function VideoCard({ video, showDetails = true, shapeClass = '' }: VideoCardProps) {
+export default function VideoCard({ video, showDetails = true }: VideoCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -29,7 +28,7 @@ export default function VideoCard({ video, showDetails = true, shapeClass = '' }
   };
 
   return (
-    <div className={`video-card ${shapeClass}`} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="video-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div 
         className="video-thumbnail-container" 
         onClick={!isPlaying ? handlePlay : undefined}

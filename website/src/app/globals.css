@@ -834,7 +834,7 @@ h1, h2, h3, h4, h5, h6 {
 .video-thumbnail-container {
   position: relative;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 9;
   background: #000;
   border-radius: 8px;
   overflow: hidden;
@@ -1011,9 +1011,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card-title {
-  font-size: 2rem;
+  font-size: 2.2rem;
+  font-weight: 300;
   margin-bottom: 1rem;
-  color: #fff;
+  color: #ffffff;
   transform: translateY(20px);
   transition: transform 0.4s ease;
 }
@@ -1023,17 +1024,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card-desc {
+  font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.6;
-  margin-bottom: 2rem;
-  opacity: 0.8;
+  opacity: 0;
   transform: translateY(20px);
-  transition: transform 0.4s ease 0.05s, opacity 0.4s ease 0.05s;
+  transition: all 0.4s ease;
+  max-height: 0;
+  overflow: hidden;
 }
 
 .animated-service-card:hover .card-desc {
-  transform: translateY(0);
   opacity: 1;
+  transform: translateY(0);
+  max-height: 200px;
+  margin-bottom: 1.5rem;
 }
 
 .card-cta-wrapper {
@@ -1044,31 +1049,37 @@ h1, h2, h3, h4, h5, h6 {
 .card-cta {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   color: #fff;
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;
-  padding: 0.8rem 1.5rem;
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  transition-delay: 0.1s;
 }
 
-.card-cta::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
+.animated-service-card:hover .card-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cta-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.animated-service-card:hover .cta-icon-wrapper {
+  background: #fff;
+  color: #000;
 }
 
 .card-cta.cta-active {
@@ -1078,77 +1089,27 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-2px);
 }
 
-.card-cta.cta-active::before {
-  left: 100%;
-}
-
-.cta-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
-
 .card-cta.cta-active .cta-icon-wrapper {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 0 15px rgba(255,255,255,0.5);
+  animation: pulse-glow 2s infinite;
   transform: translateX(5px);
 }
 
-/* Bento Features Grid */
-.video-bento-grid {
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+}
+
+/* Video Grid */
+.video-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 250px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.5rem;
-  grid-auto-flow: dense;
 }
 
-.bento-shape-large {
-  grid-column: span 2;
-  grid-row: span 2;
-}
-
-.bento-shape-tall {
-  grid-column: span 1;
-  grid-row: span 2;
-}
-
-.bento-shape-wide {
-  grid-column: span 2;
-  grid-row: span 1;
-}
-
-.bento-shape-standard {
-  grid-column: span 1;
-  grid-row: span 1;
-}
-
-@media (max-width: 1024px) {
-  .video-bento-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .video-bento-grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-  }
-  .bento-shape-large, .bento-shape-tall, .bento-shape-wide, .bento-shape-standard {
-    grid-column: span 1;
-    grid-row: span 1;
-    aspect-ratio: 16 / 9;
-  }
-  .bento-shape-tall {
-    aspect-ratio: 9 / 16;
-  }
-}
-
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 1.5rem;
-  grid-auto-flow: dense;
-}
 
 .bento-card {
   position: relative;

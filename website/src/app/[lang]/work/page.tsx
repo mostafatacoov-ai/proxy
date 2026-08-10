@@ -1,7 +1,6 @@
 import { getDictionary } from "@/getDictionary";
 import { supabase } from '@/lib/supabase';
 import VideoCard from '@/components/VideoCard';
-import { getBentoShape } from '@/utils/bento';
 
 export const revalidate = 0; // Ensure fresh data on every request
 
@@ -37,9 +36,9 @@ export default async function Work({ params }: { params: Promise<{ lang: string 
           <p>Go to the /admin page to upload your portfolio.</p>
         </div>
       ) : (
-        <div className="video-bento-grid" style={{ marginTop: '4rem' }}>
-          {videos.map((video, index) => (
-            <VideoCard key={video.id} video={video} showDetails={true} shapeClass={getBentoShape(index)} />
+        <div className="video-grid" style={{ marginTop: '4rem' }}>
+          {videos.map((video) => (
+            <VideoCard key={video.id} video={video} showDetails={true} />
           ))}
         </div>
       )}

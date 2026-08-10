@@ -1,6 +1,5 @@
 import { supabase } from '@/lib/supabase';
 import VideoCard from '@/components/VideoCard';
-import { getBentoShape } from '@/utils/bento';
 interface ServiceVideoGridProps {
   serviceName: string;
 }
@@ -24,9 +23,9 @@ export default async function ServiceVideoGrid({ serviceName }: ServiceVideoGrid
   return (
     <div className="container" style={{ paddingBottom: '6rem' }}>
       <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', textAlign: 'center', fontWeight: 300 }}>Featured Work</h2>
-      <div className="video-bento-grid">
-        {videos.map((video, index) => (
-          <VideoCard key={video.id} video={video} showDetails={true} shapeClass={getBentoShape(index)} />
+      <div className="video-grid">
+        {videos.map((video) => (
+          <VideoCard key={video.id} video={video} showDetails={true} />
         ))}
       </div>
     </div>
