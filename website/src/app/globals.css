@@ -709,7 +709,8 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     height: auto;
     min-height: 100vh;
-    justify-content: flex-start;
+    justify-content: center;
+    padding-top: 80px; /* Space for the fixed navbar */
   }
   
   .video-wrapper {
@@ -718,7 +719,6 @@ h1, h2, h3, h4, h5, h6 {
     height: auto;
     aspect-ratio: 16 / 9;
     z-index: 1;
-    margin-top: 80px; /* Space for the fixed navbar */
   }
   
   .background-video {
@@ -734,14 +734,14 @@ h1, h2, h3, h4, h5, h6 {
     position: relative;
     margin-top: 2rem;
     padding: 0 1.5rem;
-    padding-bottom: 8rem; /* Space for scroll indicator */
+    padding-bottom: 4rem; /* Reduced space since it's centered now */
     opacity: 1;
     transform: translateY(0);
   }
 
   .volume-toggle {
     bottom: auto;
-    top: calc(80px + (100vw * 9 / 16) - 3rem); /* Positioned inside the video */
+    top: calc((100vw * 9 / 16) - 3rem); /* Positioned inside the video */
     right: 1rem;
     width: 40px;
     height: 40px;
