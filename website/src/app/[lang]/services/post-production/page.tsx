@@ -3,6 +3,7 @@ import ThemeSetter from "@/components/ThemeSetter";
 import ServiceHero from "@/components/ServiceHero";
 import ServiceVideoGrid from "@/components/ServiceVideoGrid";
 import { supabase } from '@/lib/supabase';
+import { getValidBackgroundVideo } from '@/utils/videoHelpers';
 
 import AnimatedFeaturesGrid from "@/components/AnimatedFeaturesGrid";
 
@@ -27,7 +28,7 @@ export default async function PostProductionPage({ params }: { params: Promise<{
       <ServiceHero 
         title={`PROXY <span style="font-weight: 300">POST PRODUCTION</span>`}
         subtitle={serviceData.headline}
-        videoUrl={latestVideo?.video_url}
+        videoUrl={getValidBackgroundVideo(latestVideo?.video_url)}
       />
       <div className="container" style={{ paddingTop: '6rem', paddingBottom: '4rem' }}>
         <p className="lead-text" style={{ maxWidth: '900px', margin: '0 auto 4rem auto', textAlign: 'center', lineHeight: '1.8' }}>

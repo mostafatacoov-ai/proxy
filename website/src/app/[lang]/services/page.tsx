@@ -1,6 +1,7 @@
 import { getDictionary } from "@/getDictionary";
 import { supabase } from '@/lib/supabase';
 import AnimatedServiceCard from '@/components/AnimatedServiceCard';
+import { getValidBackgroundVideo } from '@/utils/videoHelpers';
 
 export const revalidate = 0; // Ensure fresh data on every request
 
@@ -75,7 +76,7 @@ export default async function Services({ params }: { params: Promise<{ lang: str
               title={link.title}
               desc={link.desc}
               ctaText={ctaText}
-              videoUrl={sample?.video_url}
+              videoUrl={getValidBackgroundVideo(sample?.video_url)}
               thumbnailUrl={sample?.thumbnail_url || undefined}
             />
           );
