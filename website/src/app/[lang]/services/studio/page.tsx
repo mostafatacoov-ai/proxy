@@ -2,6 +2,7 @@ import { getDictionary } from "@/getDictionary";
 import ThemeSetter from "@/components/ThemeSetter";
 import ServiceHero from "@/components/ServiceHero";
 import ServiceVideoGrid from "@/components/ServiceVideoGrid";
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,12 +11,21 @@ export default async function StudioPage({ params }: { params: Promise<{ lang: s
   const dict = await getDictionary(lang as 'en' | 'ar');
   const serviceData = dict.services.studio;
 
+  const { data: latestVideo } = await supabase
+    .from('videos')
+    .select('video_url')
+    .eq('category', 'Proxy Studio')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   return (
     <main className="layout animate-fade-in" style={{ minHeight: '100vh' }}>
       <ThemeSetter themeClass="theme-studio" />
       <ServiceHero 
         title={`PROXY <span style="font-weight: 300">STUDIO</span>`}
         subtitle={serviceData.headline}
+        videoUrl={latestVideo?.video_url}
       />
       <div className="container" style={{ paddingTop: '6rem', paddingBottom: '4rem' }}>
         <p className="lead-text" style={{ maxWidth: '900px', margin: '0 auto 4rem auto', textAlign: 'center', lineHeight: '1.8' }}>
