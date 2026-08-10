@@ -1092,3 +1092,122 @@ h1, h2, h3, h4, h5, h6 {
 .card-cta.cta-active .cta-icon-wrapper {
   transform: translateX(5px);
 }
+
+/* Bento Features Grid */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+  grid-auto-flow: dense;
+}
+
+.bento-card {
+  position: relative;
+  min-height: 250px;
+  border-radius: 16px;
+  padding: 2px; /* For the gradient border effect */
+  background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(0,0,0,0.5));
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+}
+
+.bento-wide {
+  grid-column: span 8;
+}
+
+.bento-standard {
+  grid-column: span 4;
+}
+
+@media (max-width: 1024px) {
+  .bento-wide, .bento-standard {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 768px) {
+  .bento-wide, .bento-standard {
+    grid-column: span 12;
+  }
+}
+
+.bento-glass {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.bento-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 1rem;
+  z-index: 2;
+  letter-spacing: -0.02em;
+}
+
+.bento-desc {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  z-index: 2;
+}
+
+/* Hover effects */
+.bento-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 255, 255, 0.05);
+}
+
+.bento-sheen {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  z-index: 1;
+  transition: left 0.7s ease;
+}
+
+.bento-card:hover .bento-sheen {
+  left: 150%;
+}
+
+/* Animations */
+.feature-hidden {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.feature-stagger-enter {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUpStagger 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeUpStagger {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
