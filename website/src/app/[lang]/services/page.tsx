@@ -66,9 +66,11 @@ export default async function Services({ params }: { params: Promise<{ lang: str
 
   return (
     <div className="section-padding container animate-fade-in" style={{ marginTop: '100px', minHeight: '100vh' }}>
-      <h1 className="section-title">{dict.navigation.services}</h1>
-      <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem', fontWeight: 300 }}>{dict.services.allServices.headline}</h2>
-      <p className="lead-text" style={{ maxWidth: '900px', marginBottom: '4rem', lineHeight: '1.8' }}>{dict.services.allServices.intro}</p>
+      <div className="services-page-header">
+        <h1 className="section-title">{dict.navigation.services}</h1>
+        <h2 style={{ fontSize: '2.5rem', marginBottom: '1.5rem', fontWeight: 300 }}>{dict.services.allServices.headline}</h2>
+        <p className="lead-text" style={{ maxWidth: '900px', marginBottom: '4rem', lineHeight: '1.8' }}>{dict.services.allServices.intro}</p>
+      </div>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
         {links.map((link, i) => {

@@ -34,7 +34,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
     // Fallback timer just in case video doesn't play or end event fails
     const timer = setTimeout(() => {
       finishLoading();
-    }, 6000); // Intro video is usually 4-5 seconds
+    }, 15000); // Increased to 15s so it relies on onEnded for normal playback
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
