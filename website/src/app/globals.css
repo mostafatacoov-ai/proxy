@@ -704,6 +704,11 @@ h1, h2, h3, h4, h5, h6 {
   .hero-subheadline { font-size: 1.2rem; }
   .cta-container { flex-direction: column; }
   
+  .intro-video {
+    object-fit: contain;
+    background: black;
+  }
+  
   /* Mobile Hero Layout Redesign */
   .hero-section {
     flex-direction: column;
@@ -733,8 +738,11 @@ h1, h2, h3, h4, h5, h6 {
   .hero-content {
     position: relative;
     margin-top: 2rem;
-    padding: 0 1.5rem;
-    padding-bottom: 4rem; /* Reduced space since it's centered now */
+    padding: 0 2rem; /* Added bleed/padding on sides */
+    padding-bottom: 4rem; 
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
     opacity: 1;
     transform: translateY(0);
   }
