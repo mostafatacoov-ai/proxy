@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { Readable } from 'stream';
 
 export async function GET(
   request: NextRequest,
@@ -45,19 +46,9 @@ export async function GET(
       const chunksize = (end - start) + 1;
       
       const file = fs.createReadStream(filePath, { start, end });
-      
-      const stream = new ReadableStream({
-        start(controller) {
-          file.on('data', (chunk) => controller.enqueue(new Uint8Array(Buffer.from(chunk))));
-          file.on('end', () => controller.close());
-          file.on('error', (err) => controller.error(err));
-        },
-        cancel() {
-          file.destroy();
-        }
-      });
+      const stream = Readable.toWeb(file);
 
-      return new NextResponse(stream, {
+      return new NextResponse(stream as any, {
         status: 206,
         headers: {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -68,18 +59,9 @@ export async function GET(
       });
     } else {
       const file = fs.createReadStream(filePath);
-      const stream = new ReadableStream({
-        start(controller) {
-          file.on('data', (chunk) => controller.enqueue(new Uint8Array(Buffer.from(chunk))));
-          file.on('end', () => controller.close());
-          file.on('error', (err) => controller.error(err));
-        },
-        cancel() {
-          file.destroy();
-        }
-      });
+      const stream = Readable.toWeb(file);
 
-      return new NextResponse(stream, {
+      return new NextResponse(stream as any, {
         status: 200,
         headers: {
           'Content-Length': fileSize.toString(),
