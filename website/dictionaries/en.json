@@ -110,7 +110,10 @@
     "emailLabel": "Email:",
     "phoneLabel": "Phone:",
     "locationLabel": "Studio Location:",
-    "locationText": "123 Cinematic Way, Suite 100, Post City, PC 90210",
+    "locationText": "10 Midan Abu El-Lasamin - Mohandeseen - Cairo",
+    "emailValue": "info@proxy-group.com",
+    "phoneValue1": "01001246516",
+    "phoneValue2": "01101114078",
     "form": {
       "name": "Name",
       "company": "Company/Agency",

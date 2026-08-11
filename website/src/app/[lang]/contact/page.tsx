@@ -11,8 +11,8 @@ export default async function Contact({ params }: { params: Promise<{ lang: stri
       
       <div className="contact-grid mt-4">
         <div className="contact-details">
-          <p><strong>{dict.contact.emailLabel}</strong> hello@proxy-post.com</p>
-          <p><strong>{dict.contact.phoneLabel}</strong> +1 (555) 123-4567</p>
+          <p><strong>{dict.contact.emailLabel}</strong> {dict.contact.emailValue}</p>
+          <p><strong>{dict.contact.phoneLabel}</strong> <span dir="ltr">{dict.contact.phoneValue1}</span> | <span dir="ltr">{dict.contact.phoneValue2}</span></p>
           <p><strong>{dict.contact.locationLabel}</strong><br/>{dict.contact.locationText}</p>
         </div>
         <div className="contact-form-wrapper">

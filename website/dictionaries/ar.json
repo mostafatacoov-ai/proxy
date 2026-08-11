@@ -110,7 +110,10 @@
     "emailLabel": "البريد الإلكتروني:",
     "phoneLabel": "الهاتف:",
     "locationLabel": "موقع الاستوديو:",
-    "locationText": "123 Cinematic Way, Suite 100, Post City, PC 90210",
+    "locationText": "١٠ ميدان ابو اللثامين - المهندسين - القاهرة",
+    "emailValue": "info@proxy-group.com",
+    "phoneValue1": "٠١٠٠١٢٤٦٥١٦",
+    "phoneValue2": "٠١١٠١١١٤٠٧٨",
     "form": {
       "name": "الاسم",
       "company": "الشركة / الوكالة",
