@@ -68,7 +68,7 @@ export async function GET(
           'Accept-Ranges': 'bytes',
           'Content-Length': chunksize.toString(),
           'Content-Type': contentType,
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, no-transform',
           'Content-Encoding': 'identity',
         },
       });
@@ -82,7 +82,7 @@ export async function GET(
           'Content-Length': fileSize.toString(),
           'Content-Type': contentType,
           'Accept-Ranges': 'bytes',
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, no-transform',
           'Content-Encoding': 'identity',
         },
       });
