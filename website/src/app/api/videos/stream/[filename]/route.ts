@@ -10,12 +10,13 @@ export async function GET(
 ) {
   try {
     const { filename } = await params;
-    let filePath = path.join(os.homedir(), '.proxy_videos', filename);
+    const decodedFilename = decodeURIComponent(filename);
+    let filePath = path.join(os.homedir(), '.proxy_videos', decodedFilename);
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
       // Fallback to local public/videos folder
-      const fallbackPath = path.join(process.cwd(), 'public', 'videos', filename);
+      const fallbackPath = path.join(process.cwd(), 'public', 'videos', decodedFilename);
       if (fs.existsSync(fallbackPath)) {
         filePath = fallbackPath;
       } else {
