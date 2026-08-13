@@ -11,17 +11,29 @@ export async function GET(
   try {
     const { filename } = await params;
     const decodedFilename = decodeURIComponent(filename);
-    let filePath = path.join(os.homedir(), '.proxy_videos', decodedFilename);
+    
+    // Potential locations for .proxy_videos on various hosting environments (like Hostinger)
+    const potentialPaths = [
+      path.join(os.homedir(), '.proxy_videos', decodedFilename),
+      path.join(process.cwd(), '.proxy_videos', decodedFilename),
+      path.join(process.cwd(), '..', '.proxy_videos', decodedFilename),
+      path.join(process.cwd(), '..', '..', '.proxy_videos', decodedFilename),
+      path.join(process.cwd(), 'public', 'videos', decodedFilename)
+    ];
 
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      // Fallback to local public/videos folder
-      const fallbackPath = path.join(process.cwd(), 'public', 'videos', decodedFilename);
-      if (fs.existsSync(fallbackPath)) {
-        filePath = fallbackPath;
-      } else {
-        return new NextResponse('File not found', { status: 404 });
+    let filePath = '';
+    let fileExists = false;
+
+    for (const p of potentialPaths) {
+      if (fs.existsSync(p)) {
+        filePath = p;
+        fileExists = true;
+        break;
       }
+    }
+
+    if (!fileExists) {
+      return new NextResponse('File not found', { status: 404 });
     }
 
     const stat = fs.statSync(filePath);
