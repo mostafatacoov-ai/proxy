@@ -20,11 +20,9 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
 
   const handlePlay = () => {
     setIsPlaying(true);
-    setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current.play().catch(e => console.error("Autoplay prevented:", e));
-      }
-    }, 50);
+    if (videoRef.current) {
+      videoRef.current.play().catch(e => console.error("Play prevented:", e));
+    }
   };
 
   return (
@@ -33,37 +31,22 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
         className="video-thumbnail-container" 
         onClick={!isPlaying ? handlePlay : undefined}
       >
-        {!isPlaying ? (
-          <>
-            {video.thumbnail_url ? (
-              <img 
-                src={video.thumbnail_url} 
-                alt={video.title} 
-                className="video-thumbnail-element"
-              />
-            ) : (
-              <video 
-                src={video.video_url} 
-                className="video-thumbnail-element"
-                preload="metadata"
-                muted
-              />
-            )}
-            <div className="play-button-overlay">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-              </svg>
-            </div>
-          </>
-        ) : (
-          <video 
-            ref={videoRef}
-            src={video.video_url} 
-            className="video-thumbnail-element"
-            controls
-            autoPlay
-            style={{ objectFit: 'contain', background: '#000' }}
-          />
+        <video 
+          ref={videoRef}
+          src={video.video_url} 
+          className="video-thumbnail-element"
+          controls={isPlaying}
+          preload="metadata"
+          poster={video.thumbnail_url || undefined}
+          style={{ objectFit: 'contain', background: '#000' }}
+        />
+        
+        {!isPlaying && (
+          <div className="play-button-overlay">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </div>
         )}
       </div>
       
