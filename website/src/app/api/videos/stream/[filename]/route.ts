@@ -55,22 +55,19 @@ export async function GET(
       // Parse Range
       const parts = range.replace(/bytes=/, "").split("-");
       const start = parseInt(parts[0], 10);
-      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      
+      // If browser doesn't specify an end, send up to 2MB chunks at a time
+      const CHUNK_SIZE = 2 * 1024 * 1024; 
+      const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE - 1, fileSize - 1);
       const chunksize = (end - start) + 1;
       
-      const file = fs.createReadStream(filePath, { start, end });
-      const stream = new ReadableStream({
-        start(controller) {
-          file.on('data', (chunk) => controller.enqueue(new Uint8Array(Buffer.from(chunk))));
-          file.on('end', () => controller.close());
-          file.on('error', (err) => controller.error(err));
-        },
-        cancel() {
-          file.destroy();
-        }
-      });
+      // Read the exact chunk into a buffer (avoids Transfer-Encoding: chunked)
+      const buffer = Buffer.alloc(chunksize);
+      const fd = fs.openSync(filePath, 'r');
+      fs.readSync(fd, buffer, 0, chunksize, start);
+      fs.closeSync(fd);
 
-      return new NextResponse(stream as any, {
+      return new NextResponse(buffer, {
         status: 206,
         headers: {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -82,19 +79,10 @@ export async function GET(
         },
       });
     } else {
-      const file = fs.createReadStream(filePath);
-      const stream = new ReadableStream({
-        start(controller) {
-          file.on('data', (chunk) => controller.enqueue(new Uint8Array(Buffer.from(chunk))));
-          file.on('end', () => controller.close());
-          file.on('error', (err) => controller.error(err));
-        },
-        cancel() {
-          file.destroy();
-        }
-      });
-
-      return new NextResponse(stream as any, {
+      // For non-range requests, try to send the file.
+      // Note: For large videos, range requests are required by browsers, so this rarely gets hit for videos.
+      const buffer = fs.readFileSync(filePath);
+      return new NextResponse(buffer, {
         status: 200,
         headers: {
           'Content-Length': fileSize.toString(),
