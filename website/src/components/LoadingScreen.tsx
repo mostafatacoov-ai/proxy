@@ -24,18 +24,14 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
   useEffect(() => {
     if (!isMounted) return;
 
-    // Attempt to play with sound
     if (videoRef.current) {
-      videoRef.current.muted = false;
+      // Start muted for guaranteed autoplay
+      videoRef.current.muted = true;
       const playPromise = videoRef.current.play();
       
       if (playPromise !== undefined) {
         playPromise.catch((error) => {
-          console.warn("Browser blocked autoplay with sound. Falling back to muted autoplay.", error);
-          if (videoRef.current) {
-            videoRef.current.muted = true;
-            videoRef.current.play().catch(e => console.error("Autoplay completely failed.", e));
-          }
+          console.warn("Browser blocked autoplay.", error);
         });
       }
     }
@@ -60,6 +56,8 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
         ref={videoRef}
         src={isMobile ? "/api/videos/stream/Proxy%20Logo.mp4" : "/api/videos/stream/intro.mp4"}
         playsInline 
+        muted
+        autoPlay
         onEnded={finishLoading}
         className="intro-video"
       />
