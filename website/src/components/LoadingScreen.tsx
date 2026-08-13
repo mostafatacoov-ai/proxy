@@ -54,7 +54,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
     <div className={`loading-screen ${isFading ? 'fade-out' : ''}`}>
       <video 
         ref={videoRef}
-        src={isMobile ? "/videos/Proxy%20Logo.mp4" : "/videos/intro.mp4"}
+        src={isMobile ? "/api/videos/stream/Proxy%20Logo.mp4" : "/api/videos/stream/intro.mp4"}
         playsInline 
         muted
         autoPlay
