@@ -8,7 +8,7 @@ interface ServiceHeroProps {
   videoUrl?: string;
 }
 
-export default function ServiceHero({ title, subtitle, videoUrl = "/api/videos/stream/final_V5_G.mp4" }: ServiceHeroProps) {
+export default function ServiceHero({ title, subtitle, videoUrl = "/videos/final_V5_G.mp4" }: ServiceHeroProps) {
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 

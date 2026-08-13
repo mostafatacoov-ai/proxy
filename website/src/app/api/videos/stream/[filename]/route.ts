@@ -59,7 +59,16 @@ export async function GET(
       const chunksize = (end - start) + 1;
       
       const file = fs.createReadStream(filePath, { start, end });
-      const stream = Readable.toWeb(file);
+      const stream = new ReadableStream({
+        start(controller) {
+          file.on('data', (chunk) => controller.enqueue(new Uint8Array(Buffer.from(chunk))));
+          file.on('end', () => controller.close());
+          file.on('error', (err) => controller.error(err));
+        },
+        cancel() {
+          file.destroy();
+        }
+      });
 
       return new NextResponse(stream as any, {
         status: 206,
@@ -74,7 +83,16 @@ export async function GET(
       });
     } else {
       const file = fs.createReadStream(filePath);
-      const stream = Readable.toWeb(file);
+      const stream = new ReadableStream({
+        start(controller) {
+          file.on('data', (chunk) => controller.enqueue(new Uint8Array(Buffer.from(chunk))));
+          file.on('end', () => controller.close());
+          file.on('error', (err) => controller.error(err));
+        },
+        cancel() {
+          file.destroy();
+        }
+      });
 
       return new NextResponse(stream as any, {
         status: 200,
