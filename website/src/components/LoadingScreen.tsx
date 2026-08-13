@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 
 export default function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const [isFading, setIsFading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const finishLoading = () => {
@@ -15,6 +17,13 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
   };
 
   useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
     // Attempt to play with sound
     if (videoRef.current) {
       videoRef.current.muted = false;
@@ -38,13 +47,18 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isMounted]);
+
+  // Don't render the video until we know if it's mobile or desktop to avoid loading the wrong video first
+  if (!isMounted) {
+    return <div className={`loading-screen ${isFading ? 'fade-out' : ''}`}></div>;
+  }
 
   return (
     <div className={`loading-screen ${isFading ? 'fade-out' : ''}`}>
       <video 
         ref={videoRef}
-        src="/api/videos/stream/intro.mp4"
+        src={isMobile ? "/api/videos/stream/Proxy%20Logo.mp4" : "/api/videos/stream/intro.mp4"}
         playsInline 
         onEnded={finishLoading}
         className="intro-video"
