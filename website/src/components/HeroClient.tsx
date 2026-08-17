@@ -12,6 +12,8 @@ export default function HeroClient({ dict, lang }: { dict: Record<string, any>, 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = isMuted;
+      // Explicitly trigger play to handle browser autoplay policies
+      videoRef.current.play().catch(e => console.log("Autoplay prevented:", e));
     }
   }, [isMuted]);
 

@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { Plyr, APITypes } from 'plyr-react';
+import 'plyr-react/plyr.css';
 
 interface VideoCardProps {
   video: {
@@ -18,7 +20,7 @@ interface VideoCardProps {
 export default function VideoCard({ video, showDetails = true }: VideoCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const modalVideoRef = useRef<HTMLVideoElement>(null);
+  const plyrRef = useRef<APITypes>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -32,8 +34,8 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
   const closeModal = () => {
     setIsModalOpen(false);
     document.body.style.overflow = '';
-    if (modalVideoRef.current) {
-      modalVideoRef.current.pause();
+    if (plyrRef.current?.plyr) {
+      plyrRef.current.plyr.pause();
     }
   };
 
@@ -50,8 +52,10 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
 
   // Auto-play when modal opens
   useEffect(() => {
-    if (isModalOpen && modalVideoRef.current) {
-      modalVideoRef.current.play().catch(e => console.error('Modal play prevented:', e));
+    if (isModalOpen && plyrRef.current?.plyr) {
+      setTimeout(() => {
+        plyrRef.current?.plyr?.play();
+      }, 100);
     }
   }, [isModalOpen]);
 
@@ -68,14 +72,25 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
             <button className="close-modal-btn" onClick={closeModal} aria-label="Close video">
               &times;
             </button>
-            <video
-              ref={modalVideoRef}
-              src={video.video_url}
-              className="video-modal-element"
-              controls
-              playsInline
-              preload="auto"
-            />
+            <div className="video-modal-element" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Plyr
+                ref={plyrRef}
+                source={{
+                  type: 'video',
+                  sources: [
+                    {
+                      src: video.video_url,
+                      provider: video.video_url.includes('youtube.com') || video.video_url.includes('youtu.be') ? 'youtube' : video.video_url.includes('vimeo.com') ? 'vimeo' : 'html5',
+                    },
+                  ],
+                }}
+                options={{
+                  autoplay: true,
+                  controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+                  settings: ['captions', 'quality', 'speed', 'loop'],
+                }}
+              />
+            </div>
           </div>
         </div>,
         document.body
@@ -93,7 +108,7 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
           aria-label={`Play ${video.title}`}
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') openModal(); }}
         >
-          {/* Show static thumbnail image or a muted metadata frame – no inline audio */}
+          {/* Show static thumbnail image or a lightweight placeholder */}
           {video.thumbnail_url ? (
             <img
               src={video.thumbnail_url}
@@ -102,14 +117,24 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
               style={{ objectFit: 'cover' }}
             />
           ) : (
-            <video
-              src={`${video.video_url}#t=0.5`}
-              className="video-thumbnail-element"
-              preload="metadata"
-              muted
-              playsInline
-              style={{ objectFit: 'cover', pointerEvents: 'none' }}
-            />
+            <div className="video-thumbnail-element" style={{ 
+              background: 'linear-gradient(45deg, #1a1a1a, #0a0a0a)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#333'
+            }}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                <line x1="7" y1="2" x2="7" y2="22"></line>
+                <line x1="17" y1="2" x2="17" y2="22"></line>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <line x1="2" y1="7" x2="7" y2="7"></line>
+                <line x1="2" y1="17" x2="7" y2="17"></line>
+                <line x1="17" y1="17" x2="22" y2="17"></line>
+                <line x1="17" y1="7" x2="22" y2="7"></line>
+              </svg>
+            </div>
           )}
 
           {/* Play button overlay – always visible */}

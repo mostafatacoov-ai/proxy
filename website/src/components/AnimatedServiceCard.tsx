@@ -46,7 +46,7 @@ export default function AnimatedServiceCard({ href, title, desc, ctaText, videoU
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="none"
               className={`card-bg-video ${isHovered || !thumbnailUrl ? 'visible' : ''}`}
             />
           )}
