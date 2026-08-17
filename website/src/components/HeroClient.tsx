@@ -29,7 +29,7 @@ export default function HeroClient({ dict, lang }: { dict: Record<string, any>, 
               className="background-video"
               autoPlay
               loop
-              muted={isMuted}
+              muted
               playsInline
               src="/api/videos/stream/final_V5_G.mp4"
             />

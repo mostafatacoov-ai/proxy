@@ -28,7 +28,7 @@ export default function ServiceHero({ title, subtitle, videoUrl = "/api/videos/s
           className="background-video"
           autoPlay
           loop
-          muted={isMuted}
+          muted
           playsInline
           preload="metadata"
           src={videoUrl}

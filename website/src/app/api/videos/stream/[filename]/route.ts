@@ -56,18 +56,23 @@ export async function GET(
       const parts = range.replace(/bytes=/, "").split("-");
       const start = parseInt(parts[0], 10);
       
-      // If browser doesn't specify an end, send up to 2MB chunks at a time
-      const CHUNK_SIZE = 2 * 1024 * 1024; 
-      const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE - 1, fileSize - 1);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
       const chunksize = (end - start) + 1;
       
-      // Read the exact chunk into a buffer (avoids Transfer-Encoding: chunked)
-      const buffer = Buffer.alloc(chunksize);
-      const fd = fs.openSync(filePath, 'r');
-      fs.readSync(fd, buffer, 0, chunksize, start);
-      fs.closeSync(fd);
+      // Use standard Node.js readable stream and convert to Web ReadableStream for Next.js
+      const fileStream = fs.createReadStream(filePath, { start, end });
+      const stream = new ReadableStream({
+        start(controller) {
+          fileStream.on('data', (chunk) => controller.enqueue(new Uint8Array(chunk)));
+          fileStream.on('end', () => controller.close());
+          fileStream.on('error', (error) => controller.error(error));
+        },
+        cancel() {
+          fileStream.destroy();
+        },
+      });
 
-      return new NextResponse(buffer, {
+      return new NextResponse(stream, {
         status: 206,
         headers: {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -75,7 +80,6 @@ export async function GET(
           'Content-Length': chunksize.toString(),
           'Content-Type': contentType,
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, no-transform',
-          'Content-Encoding': 'identity',
         },
       });
     } else {

@@ -29,21 +29,56 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
   const openModal = () => {
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
+    window.history.pushState({ videoModal: true }, '');
   };
 
-  const closeModal = () => {
+  const closeModal = (fromPopState: boolean | any = false) => {
+    const isPop = fromPopState === true;
     setIsModalOpen(false);
     document.body.style.overflow = '';
     if (plyrRef.current?.plyr) {
       plyrRef.current.plyr.pause();
     }
+    if (!isPop && window.history.state?.videoModal) {
+      window.history.back();
+    }
   };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: video.title,
+          text: video.description || `Check out this video: ${video.title}`,
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
+  // Handle browser back button
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      if (isModalOpen) {
+        closeModal(true);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isModalOpen]);
 
   // Close on Escape key
   useEffect(() => {
     if (!isModalOpen) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeModal();
+      if (e.key === 'Escape') closeModal(false);
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
@@ -69,6 +104,38 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
           aria-label={video.title}
         >
           <div className="video-modal-content" onClick={e => e.stopPropagation()}>
+            <button 
+              onClick={handleShare}
+              aria-label="Share video"
+              title="Share video"
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '70px',
+                width: '40px',
+                height: '40px',
+                background: 'rgba(0, 0, 0, 0.5)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 10,
+                transition: 'background 0.2s',
+              }}
+              onMouseOver={(e) => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)'}
+              onMouseOut={(e) => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.5)'}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+            </button>
             <button className="close-modal-btn" onClick={closeModal} aria-label="Close video">
               &times;
             </button>
@@ -147,20 +214,45 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
 
         {showDetails && (
           <div style={{ marginTop: '1.5rem', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-            <span style={{
-              display: 'inline-block',
-              padding: '0.2rem 0.6rem',
-              background: '#222',
-              color: '#aaa',
-              fontSize: '0.75rem',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              borderRadius: '4px',
-              marginBottom: '0.75rem',
-              alignSelf: 'flex-start'
-            }}>
-              {video.category}
-            </span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+              <span style={{
+                display: 'inline-block',
+                padding: '0.2rem 0.6rem',
+                background: '#222',
+                color: '#aaa',
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                borderRadius: '4px',
+              }}>
+                {video.category}
+              </span>
+              <button 
+                onClick={handleShare}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#aaa',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0.2rem',
+                  transition: 'color 0.2s',
+                }}
+                aria-label="Share video"
+                title="Share video"
+                onMouseOver={(e) => e.currentTarget.style.color = '#fff'}
+                onMouseOut={(e) => e.currentTarget.style.color = '#aaa'}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+              </button>
+            </div>
             <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem', color: '#fff' }}>{video.title}</h3>
             {video.description && (
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
