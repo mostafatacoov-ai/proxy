@@ -51,10 +51,10 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
         await navigator.share({
           title: video.title,
           text: video.description || `Check out this video: ${video.title}`,
-          url: window.location.href,
+          url: video.video_url,
         });
       } else {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(video.video_url);
         alert('Link copied to clipboard!');
       }
     } catch (error) {
