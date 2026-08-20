@@ -26,6 +26,7 @@ export default function AdminPage() {
   const [filterCategory, setFilterCategory] = useState<string>('All');
   
   // Upload State
+  const [uploadMode, setUploadMode] = useState<'file' | 'embed'>('file');
   const [file, setFile] = useState<File | null>(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [thumbnailData, setThumbnailData] = useState<string | null>(null);
@@ -34,7 +35,9 @@ export default function AdminPage() {
   const [category, setCategory] = useState<string[]>([CATEGORIES[0]]);
   const [uploading, setUploading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  
+  // Embed-specific state
+  const [embedCode, setEmbedCode] = useState('');
+
   // Edit State
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -96,6 +99,61 @@ export default function AdminPage() {
   }, []);
 
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  // ── Derive a preview src from the raw embed code / URL ────────────────────
+  const getEmbedPreviewSrc = (code: string): string | null => {
+    const trimmed = code.trim();
+    const iframeSrcMatch = trimmed.match(/src=["']([^"']+)["']/i);
+    if (iframeSrcMatch) return iframeSrcMatch[1];
+    const watchMatch = trimmed.match(/youtube\.com\/watch\?(?:[^#]*&)?v=([a-zA-Z0-9_-]{11})/);
+    if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
+    const shortMatch = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+    if (/youtube\.com\/embed\//.test(trimmed) || /player\.vimeo\.com\/video\//.test(trimmed)) return trimmed;
+    return null;
+  };
+
+  const embedPreviewSrc = getEmbedPreviewSrc(embedCode);
+
+  // ── Embed submit handler ──────────────────────────────────────────────────
+  const handleEmbedSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!embedCode || !title || category.length === 0) {
+      alert('Please provide an embed code / URL, title, and at least one category.');
+      return;
+    }
+    setUploading(true);
+    try {
+      const res = await fetch('/api/videos/embed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          description,
+          category: category.join(','),
+          embedCode,
+          thumbnailUrl: thumbnailData || null,
+        }),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to add embed video');
+      }
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setCategory([CATEGORIES[0]]);
+      setEmbedCode('');
+      setThumbnailData(null);
+      fetchVideos();
+      setSuccessMessage('Embed video added successfully!');
+      setTimeout(() => setSuccessMessage(''), 5000);
+    } catch (error: any) {
+      alert(`Failed: ${error.message || 'Unknown error'}`);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -307,142 +365,295 @@ export default function AdminPage() {
 
       {/* Upload Section */}
       <div style={{ background: '#111', padding: '1.5rem', borderRadius: '8px', marginBottom: '3rem', border: '1px solid #333' }}>
-        <h2 style={{ marginBottom: '1.5rem', color: '#fff' }}>Upload New Video</h2>
-        <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Video File</label>
-            <input 
-              id="videoFile"
-              type="file" 
-              accept="video/*" 
-              onChange={e => {
-                const f = e.target.files?.[0] || null;
-                setFile(f);
-                if (f) {
-                  setVideoPreviewUrl(URL.createObjectURL(f));
-                } else {
-                  setVideoPreviewUrl(null);
-                  setThumbnailData(null);
-                }
-              }} 
-              required
-              style={{ color: '#fff' }}
-            />
-          </div>
+        <h2 style={{ marginBottom: '1.5rem', color: '#fff' }}>Add New Video</h2>
 
-          {videoPreviewUrl && (
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Video Preview & Thumbnail Capture</label>
-              <video 
-                id="uploadVideoPreview"
-                src={videoPreviewUrl} 
-                preload="metadata"
-                controls 
-                style={{ width: '100%', height: 'auto', maxHeight: '450px', objectFit: 'contain', background: '#000', borderRadius: '4px', marginBottom: '0.5rem', display: 'block' }} 
-              />
-              <button
-                type="button"
-                onClick={() => captureThumbnail('uploadVideoPreview', setThumbnailData)}
-                style={{ padding: '0.5rem 1rem', background: '#444', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
-              >
-                📸 Capture Frame as Thumbnail
-              </button>
-              {thumbnailData && (
-                <div style={{ marginTop: '1rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Captured Thumbnail</label>
-                  <img src={thumbnailData} alt="Captured thumbnail" style={{ width: '100%', height: 'auto', maxHeight: '350px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333', display: 'block' }} />
-                </div>
-              )}
-            </div>
-          )}
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Title</label>
-            <input 
-              type="text" 
-              value={title} 
-              onChange={e => setTitle(e.target.value)} 
-              required
-              style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px' }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Description</label>
-            <textarea 
-              value={description} 
-              onChange={e => setDescription(e.target.value)} 
-              rows={4}
-              style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px', resize: 'vertical' }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Categories</label>
-            <div className="category-grid">
-              {CATEGORIES.map(c => (
-                <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', cursor: 'pointer' }}>
-                  <input 
-                    type="checkbox" 
-                    checked={category.includes(c)}
-                    onChange={e => {
-                      if (e.target.checked) {
-                        setCategory([...category, c]);
-                      } else {
-                        setCategory(category.filter(cat => cat !== c));
-                      }
-                    }}
-                  />
-                  <span style={{ fontSize: '0.9rem' }}>{c}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {uploading && (
-            <div style={{ marginTop: '1rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#ccc', fontSize: '0.9rem' }}>
-                <span>Uploading...</span>
-                <span>{uploadProgress}%</span>
-              </div>
-              <div style={{ width: '100%', height: '8px', background: '#333', borderRadius: '4px', overflow: 'hidden' }}>
-                <div 
-                  style={{ 
-                    width: `${uploadProgress}%`, 
-                    height: '100%', 
-                    background: '#fff', 
-                    transition: 'width 0.2s ease' 
-                  }} 
-                />
-              </div>
-            </div>
-          )}
-
-          {successMessage && (
-            <div style={{ padding: '1rem', background: 'rgba(40, 167, 69, 0.2)', color: '#4ade80', border: '1px solid #28a745', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold' }}>
-              {successMessage}
-            </div>
-          )}
-
-          <button 
-            type="submit" 
-            disabled={uploading}
-            style={{ 
-              marginTop: '1rem', 
-              padding: '1rem 2rem', 
-              background: '#fff', 
-              color: '#000', 
-              border: 'none', 
-              cursor: uploading ? 'not-allowed' : 'pointer',
-              fontWeight: 'bold',
-              borderRadius: '4px',
-              opacity: uploading ? 0.7 : 1
+        {/* ── Mode switcher tabs ── */}
+        <div style={{ display: 'flex', gap: '0', marginBottom: '1.5rem', border: '1px solid #333', borderRadius: '6px', overflow: 'hidden', width: 'fit-content' }}>
+          <button
+            type="button"
+            onClick={() => { setUploadMode('file'); setSuccessMessage(''); }}
+            style={{
+              padding: '0.6rem 1.4rem',
+              background: uploadMode === 'file' ? '#fff' : 'transparent',
+              color: uploadMode === 'file' ? '#000' : '#aaa',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: uploadMode === 'file' ? 'bold' : 'normal',
+              fontSize: '0.9rem',
+              transition: 'all 0.2s',
             }}
           >
-            {uploading ? 'Uploading...' : 'Upload Video'}
+            📁 Upload File
           </button>
-        </form>
+          <button
+            type="button"
+            onClick={() => { setUploadMode('embed'); setSuccessMessage(''); }}
+            style={{
+              padding: '0.6rem 1.4rem',
+              background: uploadMode === 'embed' ? '#fff' : 'transparent',
+              color: uploadMode === 'embed' ? '#000' : '#aaa',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: uploadMode === 'embed' ? 'bold' : 'normal',
+              fontSize: '0.9rem',
+              transition: 'all 0.2s',
+            }}
+          >
+            🔗 YouTube / Embed Code
+          </button>
+        </div>
+
+        {/* ════════════════ FILE UPLOAD FORM ════════════════ */}
+        {uploadMode === 'file' && (
+          <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Video File</label>
+              <input 
+                id="videoFile"
+                type="file" 
+                accept="video/*" 
+                onChange={e => {
+                  const f = e.target.files?.[0] || null;
+                  setFile(f);
+                  if (f) {
+                    setVideoPreviewUrl(URL.createObjectURL(f));
+                  } else {
+                    setVideoPreviewUrl(null);
+                    setThumbnailData(null);
+                  }
+                }} 
+                required
+                style={{ color: '#fff' }}
+              />
+            </div>
+
+            {videoPreviewUrl && (
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Video Preview & Thumbnail Capture</label>
+                <video 
+                  id="uploadVideoPreview"
+                  src={videoPreviewUrl} 
+                  preload="metadata"
+                  controls 
+                  style={{ width: '100%', height: 'auto', maxHeight: '450px', objectFit: 'contain', background: '#000', borderRadius: '4px', marginBottom: '0.5rem', display: 'block' }} 
+                />
+                <button
+                  type="button"
+                  onClick={() => captureThumbnail('uploadVideoPreview', setThumbnailData)}
+                  style={{ padding: '0.5rem 1rem', background: '#444', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
+                >
+                  📸 Capture Frame as Thumbnail
+                </button>
+                {thumbnailData && (
+                  <div style={{ marginTop: '1rem' }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Captured Thumbnail</label>
+                    <img src={thumbnailData} alt="Captured thumbnail" style={{ width: '100%', height: 'auto', maxHeight: '350px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333', display: 'block' }} />
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Title</label>
+              <input 
+                type="text" 
+                value={title} 
+                onChange={e => setTitle(e.target.value)} 
+                required
+                style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Description</label>
+              <textarea 
+                value={description} 
+                onChange={e => setDescription(e.target.value)} 
+                rows={4}
+                style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px', resize: 'vertical' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Categories</label>
+              <div className="category-grid">
+                {CATEGORIES.map(c => (
+                  <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={category.includes(c)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setCategory([...category, c]);
+                        } else {
+                          setCategory(category.filter(cat => cat !== c));
+                        }
+                      }}
+                    />
+                    <span style={{ fontSize: '0.9rem' }}>{c}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {uploading && (
+              <div style={{ marginTop: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#ccc', fontSize: '0.9rem' }}>
+                  <span>Uploading...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <div style={{ width: '100%', height: '8px', background: '#333', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div 
+                    style={{ 
+                      width: `${uploadProgress}%`, 
+                      height: '100%', 
+                      background: '#fff', 
+                      transition: 'width 0.2s ease' 
+                    }} 
+                  />
+                </div>
+              </div>
+            )}
+
+            {successMessage && (
+              <div style={{ padding: '1rem', background: 'rgba(40, 167, 69, 0.2)', color: '#4ade80', border: '1px solid #28a745', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold' }}>
+                {successMessage}
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={uploading}
+              style={{ 
+                marginTop: '1rem', 
+                padding: '1rem 2rem', 
+                background: '#fff', 
+                color: '#000', 
+                border: 'none', 
+                cursor: uploading ? 'not-allowed' : 'pointer',
+                fontWeight: 'bold',
+                borderRadius: '4px',
+                opacity: uploading ? 0.7 : 1
+              }}
+            >
+              {uploading ? 'Uploading...' : 'Upload Video'}
+            </button>
+          </form>
+        )}
+
+        {/* ════════════════ EMBED CODE FORM ════════════════ */}
+        {uploadMode === 'embed' && (
+          <form onSubmit={handleEmbedSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>
+                YouTube Link or Embed Code
+              </label>
+              <p style={{ fontSize: '0.82rem', color: '#777', marginBottom: '0.6rem', lineHeight: 1.5 }}>
+                Paste a YouTube URL (e.g. <code style={{ background: '#1a1a1a', padding: '0 4px', borderRadius: 3 }}>https://youtu.be/ABC123</code>), a <code style={{ background: '#1a1a1a', padding: '0 4px', borderRadius: 3 }}>youtube.com/watch?v=</code> link, or a full <code style={{ background: '#1a1a1a', padding: '0 4px', borderRadius: 3 }}>&lt;iframe&gt;</code> embed snippet.
+              </p>
+              <textarea
+                value={embedCode}
+                onChange={e => setEmbedCode(e.target.value)}
+                rows={4}
+                placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                required
+                style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px', resize: 'vertical', fontFamily: 'monospace', fontSize: '0.85rem' }}
+              />
+            </div>
+
+            {/* Live preview */}
+            {embedPreviewSrc && (
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Preview</label>
+                <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: '#000', borderRadius: '4px', overflow: 'hidden', border: '1px solid #333' }}>
+                  <iframe
+                    src={embedPreviewSrc}
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="Embed preview"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Title</label>
+              <input 
+                type="text" 
+                value={title} 
+                onChange={e => setTitle(e.target.value)} 
+                required
+                style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Description</label>
+              <textarea 
+                value={description} 
+                onChange={e => setDescription(e.target.value)} 
+                rows={4}
+                style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px', resize: 'vertical' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Categories</label>
+              <div className="category-grid">
+                {CATEGORIES.map(c => (
+                  <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={category.includes(c)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setCategory([...category, c]);
+                        } else {
+                          setCategory(category.filter(cat => cat !== c));
+                        }
+                      }}
+                    />
+                    <span style={{ fontSize: '0.9rem' }}>{c}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {successMessage && (
+              <div style={{ padding: '1rem', background: 'rgba(40, 167, 69, 0.2)', color: '#4ade80', border: '1px solid #28a745', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold' }}>
+                {successMessage}
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={uploading || !embedPreviewSrc}
+              style={{ 
+                marginTop: '1rem', 
+                padding: '1rem 2rem', 
+                background: embedPreviewSrc ? '#fff' : '#555',
+                color: '#000', 
+                border: 'none', 
+                cursor: (uploading || !embedPreviewSrc) ? 'not-allowed' : 'pointer',
+                fontWeight: 'bold',
+                borderRadius: '4px',
+                opacity: uploading ? 0.7 : 1,
+                transition: 'background 0.2s',
+              }}
+            >
+              {uploading ? 'Saving...' : 'Add Embed Video'}
+            </button>
+            {!embedPreviewSrc && embedCode.trim().length > 0 && (
+              <p style={{ color: '#e57373', fontSize: '0.85rem', marginTop: '-0.5rem' }}>
+                ⚠️ Could not recognise this as a YouTube or embed URL. Please check your input.
+              </p>
+            )}
+          </form>
+        )}
       </div>
 
       {/* Videos List Section */}
