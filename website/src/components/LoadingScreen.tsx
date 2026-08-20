@@ -17,9 +17,16 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
   };
 
   useEffect(() => {
+    const isBot = /bot|googlebot|crawler|spider|robot|crawling|lighthouse/i.test(navigator.userAgent);
+    
+    if (isBot || sessionStorage.getItem('introPlayed')) {
+      onComplete();
+      return;
+    }
+
     setIsMobile(window.innerWidth <= 768);
     setIsMounted(true);
-  }, []);
+  }, [onComplete]);
 
   useEffect(() => {
     if (!isMounted) return;
@@ -32,6 +39,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
       if (playPromise !== undefined) {
         playPromise.catch((error) => {
           console.warn("Browser blocked autoplay.", error);
+          finishLoading(); // If autoplay fails, just skip the intro
         });
       }
     }
@@ -39,11 +47,16 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
     // Fallback timer just in case video doesn't play or end event fails
     const timer = setTimeout(() => {
       finishLoading();
-    }, 15000); // Increased to 15s so it relies on onEnded for normal playback
+    }, 8000); // Reduced from 15s to 8s to prevent excessive waiting
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted]);
+
+  const handleVideoEnded = () => {
+    sessionStorage.setItem('introPlayed', 'true');
+    finishLoading();
+  };
 
   // Don't render the video until we know if it's mobile or desktop to avoid loading the wrong video first
   if (!isMounted) {
@@ -58,7 +71,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
         playsInline 
         muted
         autoPlay
-        onEnded={finishLoading}
+        onEnded={handleVideoEnded}
         className="intro-video"
       />
     </div>
