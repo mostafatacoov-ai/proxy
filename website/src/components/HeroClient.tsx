@@ -36,7 +36,7 @@ export default function HeroClient({ dict, lang }: { dict: Record<string, any>, 
             <div className="video-overlay"></div>
           </div>
 
-          <div className="hero-content">
+          <div className={`hero-content ${loadingComplete ? 'hero-loaded' : ''}`}>
             <h1 className="hero-headline" dangerouslySetInnerHTML={{ __html: dict.hero.headline }}></h1>
             <p className="hero-subheadline">
               {dict.hero.subheadline}

@@ -360,7 +360,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="container" style={{ marginTop: '120px', paddingBottom: '100px' }}>
+    <div className="container" style={{ marginTop: '120px', paddingBottom: '100px', maxWidth: '100%', overflowX: 'hidden' }}>
       <h1 className="section-title" style={{ fontSize: '2rem', marginBottom: '2rem' }}>Admin Dashboard</h1>
 
       {/* Upload Section */}
@@ -461,7 +461,7 @@ export default function AdminPage() {
                 value={title} 
                 onChange={e => setTitle(e.target.value)} 
                 required
-                style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px' }}
+                style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px', boxSizing: 'border-box' }}
               />
             </div>
 
@@ -587,7 +587,7 @@ export default function AdminPage() {
                 value={title} 
                 onChange={e => setTitle(e.target.value)} 
                 required
-                style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px' }}
+                style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px', boxSizing: 'border-box' }}
               />
             </div>
 
@@ -781,7 +781,8 @@ export default function AdminPage() {
       {editingVideo && (
         <div style={{ 
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', 
-          background: 'rgba(0,0,0,0.8)', zIndex: 100, overflowY: 'auto', padding: '2rem 1rem'
+          background: 'rgba(0,0,0,0.85)', zIndex: 100, overflowY: 'auto', padding: '1rem',
+          WebkitOverflowScrolling: 'touch',
         }}>
           <div style={{ background: '#111', padding: '1.5rem', borderRadius: '8px', width: '100%', maxWidth: '500px', border: '1px solid #333', margin: '0 auto' }}>
             <h2 style={{ marginBottom: '1.5rem', color: '#fff' }}>Edit Video</h2>
@@ -794,7 +795,7 @@ export default function AdminPage() {
                   value={editTitle} 
                   onChange={e => setEditTitle(e.target.value)} 
                   required
-                  style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px' }}
+                  style={{ width: '100%', padding: '0.8rem', background: '#222', border: '1px solid #444', color: '#fff', borderRadius: '4px', boxSizing: 'border-box' }}
                 />
               </div>
 

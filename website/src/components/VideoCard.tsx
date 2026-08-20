@@ -153,7 +153,7 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
               style={{
                 position: 'absolute',
                 top: '20px',
-                right: '70px',
+                left: '20px',
                 width: '40px',
                 height: '40px',
                 background: 'rgba(0, 0, 0, 0.5)',
@@ -184,14 +184,16 @@ export default function VideoCard({ video, showDetails = true }: VideoCardProps)
             <div className="video-modal-element" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {isEmbed && embedSrc ? (
                 /* ── YouTube / Vimeo iframe player ── */
-                <iframe
-                  src={embedSrcAutoplay || embedSrc}
-                  style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  title={video.title}
-                />
+                <div style={{ position: 'relative', width: '100%', maxWidth: '100%', aspectRatio: '16/9' }}>
+                  <iframe
+                    src={embedSrcAutoplay || embedSrc}
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none', display: 'block', borderRadius: '4px' }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title={video.title}
+                  />
+                </div>
               ) : (
                 /* ── File-based Plyr player ── */
                 <Plyr

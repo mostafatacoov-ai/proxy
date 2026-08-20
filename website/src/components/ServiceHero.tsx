@@ -36,7 +36,8 @@ export default function ServiceHero({ title, subtitle, videoUrl = "/api/videos/s
         <div className="video-overlay" style={{ background: 'rgba(0,0,0,0.5)' }}></div>
       </div>
 
-      <div className="hero-content">
+      {/* hero-loaded ensures content is always visible — no hover needed on mobile */}
+      <div className="hero-content hero-loaded">
         <h1 className="hero-headline" style={{ fontWeight: 300 }} dangerouslySetInnerHTML={{ __html: title }}></h1>
         <p className="hero-subheadline">
           {subtitle}

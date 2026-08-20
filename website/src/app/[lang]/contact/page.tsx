@@ -1,40 +1,80 @@
 import { getDictionary } from "@/getDictionary";
+import ContactClient from "@/components/ContactClient";
 
 export default async function Contact({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang as 'en' | 'ar');
 
   return (
-    <div className="section-padding container animate-fade-in" style={{ marginTop: '100px' }}>
-      <h1 className="section-title">{dict.contact.title}</h1>
-      <p className="lead-text">{dict.contact.subtitle}</p>
-      
-      <div className="contact-grid mt-4">
-        <div className="contact-details">
-          <p><strong>{dict.contact.emailLabel}</strong> {dict.contact.emailValue}</p>
-          <p><strong>{dict.contact.phoneLabel}</strong> <span dir="ltr">{dict.contact.phoneValue1}</span> | <span dir="ltr">{dict.contact.phoneValue2}</span></p>
-          <p><strong>{dict.contact.locationLabel}</strong><br/>{dict.contact.locationText}</p>
+    <div className="animate-fade-in" style={{ minHeight: '100vh' }}>
+      {/* Page header */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0a0a0a 0%, #111 100%)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        paddingTop: '140px',
+        paddingBottom: '5rem',
+      }}>
+        <div className="container">
+          <h1 className="section-title" style={{ marginBottom: '1rem' }}>{dict.contact.title}</h1>
+          <p className="lead-text" style={{ maxWidth: '600px', marginBottom: 0 }}>{dict.contact.subtitle}</p>
         </div>
-        <div className="contact-form-wrapper">
-          <form className="contact-form">
-            <div className="form-group">
-              <label>{dict.contact.form.name}</label>
-              <input type="text" required />
+      </div>
+
+      {/* Content */}
+      <div className="container" style={{ paddingTop: '5rem', paddingBottom: '6rem' }}>
+        <div className="contact-grid">
+          {/* ── Left: contact details ── */}
+          <div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 300, marginBottom: '2.5rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {lang === 'ar' ? 'معلومات التواصل' : 'Contact Details'}
+            </h2>
+
+            {/* Address */}
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', alignItems: 'flex-start' }}>
+              <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.3rem' }}>{dict.contact.locationLabel}</div>
+                <div style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
+                  {lang === 'ar'
+                    ? '١٠ ميدان أبو اللثامين، المهندسين، القاهرة'
+                    : '10 Medan Abu El-Lothameen, El-Mohandeseen, Cairo'}
+                </div>
+              </div>
             </div>
-            <div className="form-group">
-              <label>{dict.contact.form.email}</label>
-              <input type="email" required />
+
+            {/* Phone */}
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', alignItems: 'flex-start' }}>
+              <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.11h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l1.27-.8a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              </div>
+              <div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.3rem' }}>{dict.contact.phoneLabel}</div>
+                <a href="tel:+201001246516" style={{ color: 'rgba(255,255,255,0.8)', display: 'block' }} dir="ltr">+20 100 124 6516</a>
+                <a href="tel:+201101114078" style={{ color: 'rgba(255,255,255,0.8)', display: 'block', marginTop: '0.2rem' }} dir="ltr">+20 110 111 4078</a>
+              </div>
             </div>
-            <div className="form-group">
-              <label>{dict.contact.form.scope}</label>
-              <select>
-                {dict.contact.form.scopeOptions.map((opt: string, i: number) => (
-                  <option key={i} value={opt}>{opt}</option>
-                ))}
-              </select>
+
+            {/* Email */}
+            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', alignItems: 'flex-start' }}>
+              <div style={{ flexShrink: 0, width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </div>
+              <div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.3rem' }}>{dict.contact.emailLabel}</div>
+                <a href="mailto:tantawy.mac85@gmail.com" style={{ color: 'rgba(255,255,255,0.8)' }}>tantawy.mac85@gmail.com</a>
+              </div>
             </div>
-            <button type="submit" className="btn-submit">{dict.contact.form.submit}</button>
-          </form>
+          </div>
+
+          {/* ── Right: contact form ── */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '2.5rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 300, marginBottom: '2rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {lang === 'ar' ? 'أرسل رسالة' : 'Send a Message'}
+            </h2>
+            <ContactClient dict={dict} lang={lang} />
+          </div>
         </div>
       </div>
     </div>
