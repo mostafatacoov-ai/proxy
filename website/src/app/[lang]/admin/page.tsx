@@ -724,6 +724,18 @@ export default function AdminPage() {
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                   </div>
                 </div>
+              ) : video.video_url.startsWith('embed:') ? (
+                // Embed video — show iframe instead of broken <video>
+                <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: '#000', overflow: 'hidden' }}>
+                  <iframe
+                    src={video.video_url.slice(6)}
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title={video.title}
+                  />
+                </div>
               ) : (
                 <video src={video.video_url} preload="metadata" controls style={{ width: '100%', height: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block', background: '#000' }} />
               )}
@@ -820,26 +832,126 @@ export default function AdminPage() {
 
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Video Preview & Thumbnail Update</label>
-                <video 
-                  id="editVideoPreview"
-                  src={editingVideo.video_url} 
-                  poster={editingVideo.thumbnail_url || undefined}
-                  preload="metadata"
-                  controls 
-                  style={{ width: '100%', height: 'auto', maxHeight: '400px', objectFit: 'contain', background: '#000', borderRadius: '4px', marginBottom: '0.5rem', display: 'block' }} 
-                />
-                <button
-                  type="button"
-                  onClick={() => captureThumbnail('editVideoPreview', setEditThumbnailData)}
-                  style={{ padding: '0.5rem 1rem', background: '#444', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
-                >
-                  📸 Capture Frame as New Thumbnail
-                </button>
-                {(editThumbnailData || editingVideo.thumbnail_url) && (
-                  <div style={{ marginTop: '1rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Current Thumbnail</label>
-                    <img src={editThumbnailData || editingVideo.thumbnail_url} alt="Current thumbnail" style={{ width: '100%', height: 'auto', maxHeight: '300px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333', display: 'block' }} />
-                  </div>
+
+                {editingVideo.video_url.startsWith('embed:') ? (() => {
+                  // ── Embed video (YouTube / Vimeo) ──
+                  const embedSrc = editingVideo.video_url.slice(6);
+                  const ytIdMatch = embedSrc.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/);
+                  const ytId = ytIdMatch ? ytIdMatch[1] : null;
+                  const ytThumbQualities = ytId
+                    ? [
+                        { label: 'Max Resolution', key: 'maxresdefault' },
+                        { label: 'HD Default',     key: 'sddefault'      },
+                        { label: 'High Quality',   key: 'hqdefault'      },
+                        { label: 'Medium Quality', key: 'mqdefault'      },
+                      ]
+                    : [];
+                  return (
+                    <>
+                      {/* Live embed preview */}
+                      <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: '#000', borderRadius: '4px', overflow: 'hidden', border: '1px solid #333', marginBottom: '1rem' }}>
+                        <iframe
+                          src={embedSrc}
+                          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          title="Edit preview"
+                        />
+                      </div>
+
+                      {/* YouTube thumbnail quality picker */}
+                      {ytId && (
+                        <div>
+                          <p style={{ fontSize: '0.82rem', color: '#aaa', marginBottom: '0.6rem' }}>
+                            YouTube thumbnails — click one to use it:
+                          </p>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                            {ytThumbQualities.map(({ label, key }) => {
+                              const thumbUrl = `https://img.youtube.com/vi/${ytId}/${key}.jpg`;
+                              const isSelected = editThumbnailData === thumbUrl;
+                              return (
+                                <div
+                                  key={key}
+                                  onClick={() => setEditThumbnailData(thumbUrl)}
+                                  style={{
+                                    cursor: 'pointer',
+                                    borderRadius: '4px',
+                                    overflow: 'hidden',
+                                    border: isSelected ? '2px solid #4ade80' : '2px solid transparent',
+                                    position: 'relative',
+                                    transition: 'border-color 0.15s',
+                                  }}
+                                  title={`Use ${label} thumbnail`}
+                                >
+                                  <img
+                                    src={thumbUrl}
+                                    alt={label}
+                                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                                    onError={(e) => { (e.currentTarget.parentElement as HTMLElement).style.display = 'none'; }}
+                                  />
+                                  <div style={{
+                                    position: 'absolute', bottom: 0, left: 0, right: 0,
+                                    background: isSelected ? 'rgba(74,222,128,0.85)' : 'rgba(0,0,0,0.55)',
+                                    color: isSelected ? '#000' : '#fff',
+                                    fontSize: '0.7rem',
+                                    padding: '3px 6px',
+                                    textAlign: 'center',
+                                    fontWeight: isSelected ? 'bold' : 'normal',
+                                    transition: 'background 0.15s',
+                                  }}>
+                                    {isSelected ? '✓ Selected' : label}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {editThumbnailData && (
+                            <button
+                              type="button"
+                              onClick={() => setEditThumbnailData(null)}
+                              style={{ fontSize: '0.8rem', background: 'none', border: 'none', color: '#e57373', cursor: 'pointer', padding: 0, marginBottom: '0.5rem' }}
+                            >
+                              ✕ Clear selection
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Current thumbnail preview */}
+                      {(editThumbnailData || editingVideo.thumbnail_url) && (
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Current Thumbnail</label>
+                          <img src={editThumbnailData || editingVideo.thumbnail_url} alt="Current thumbnail" style={{ width: '100%', height: 'auto', maxHeight: '300px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333', display: 'block' }} />
+                        </div>
+                      )}
+                    </>
+                  );
+                })() : (
+                  // ── File-based video ──
+                  <>
+                    <video
+                      id="editVideoPreview"
+                      src={editingVideo.video_url}
+                      poster={editingVideo.thumbnail_url || undefined}
+                      preload="metadata"
+                      controls
+                      style={{ width: '100%', height: 'auto', maxHeight: '400px', objectFit: 'contain', background: '#000', borderRadius: '4px', marginBottom: '0.5rem', display: 'block' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => captureThumbnail('editVideoPreview', setEditThumbnailData)}
+                      style={{ padding: '0.5rem 1rem', background: '#444', color: '#fff', border: '1px solid #555', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
+                    >
+                      📸 Capture Frame as New Thumbnail
+                    </button>
+                    {(editThumbnailData || editingVideo.thumbnail_url) && (
+                      <div style={{ marginTop: '1rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Current Thumbnail</label>
+                        <img src={editThumbnailData || editingVideo.thumbnail_url} alt="Current thumbnail" style={{ width: '100%', height: 'auto', maxHeight: '300px', objectFit: 'contain', background: '#000', borderRadius: '4px', border: '1px solid #333', display: 'block' }} />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
