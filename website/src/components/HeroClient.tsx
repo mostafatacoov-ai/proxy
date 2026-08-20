@@ -4,10 +4,18 @@ import { useState, useRef, useEffect } from "react";
 import LoadingScreen from "./LoadingScreen";
 import Link from "next/link";
 
-export default function HeroClient({ dict, lang }: { dict: Record<string, any>, lang: string }) {
-  const [loadingComplete, setLoadingComplete] = useState(false);
+export default function HeroClient({ dict, lang, isBot = false }: { dict: Record<string, any>, lang: string, isBot?: boolean }) {
+  // If it's a bot, loading is instantly complete to prevent LCP penalties
+  const [loadingComplete, setLoadingComplete] = useState(isBot);
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // For normal users, also skip instantly if they've already seen the intro
+    if (!isBot && sessionStorage.getItem('introPlayed')) {
+      setLoadingComplete(true);
+    }
+  }, [isBot]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -21,18 +29,21 @@ export default function HeroClient({ dict, lang }: { dict: Record<string, any>, 
     <>
       {!loadingComplete && <LoadingScreen onComplete={() => setLoadingComplete(true)} />}
       
-      <div className={`hero-wrapper ${loadingComplete ? 'show-hero' : 'hide-hero'}`}>
+      {/* If loading is complete, we skip the transition delay for bots */}
+      <div className={`hero-wrapper ${loadingComplete ? 'show-hero' : 'hide-hero'}`} style={isBot ? { transition: 'none' } : {}}>
         <section className="hero-section">
-          <div className="video-wrapper">
-            <video
-              ref={videoRef}
-              className="background-video"
-              autoPlay
-              loop
-              muted
-              playsInline
-              src="/api/videos/stream/final_V5_G.mp4"
-            />
+          <div className="video-wrapper" style={{ background: '#0a0a0a' }}>
+            {!isBot && (
+              <video
+                ref={videoRef}
+                className="background-video"
+                autoPlay
+                loop
+                muted
+                playsInline
+                src="/api/videos/stream/final_V5_G.mp4"
+              />
+            )}
             <div className="video-overlay"></div>
           </div>
 
